@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class Account {
 
+	// instance variables
 	private int id;
 	private String name;
 	private char[] password;
