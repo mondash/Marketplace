@@ -1,4 +1,5 @@
 package main;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,8 +26,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -39,7 +44,6 @@ public class GUI extends JFrame implements WindowListener {
 	private static final String inventoryDir = "res//products//";
 	private static final String directoryDir = "res//accounts//";
 	private static final String constantsDir = "res//constants.txt";
-	
 
 	private JPanel loginPanel;
 	private JPanel menuPanel;
@@ -147,6 +151,7 @@ public class GUI extends JFrame implements WindowListener {
 		JPanel enclosingPanel = new JPanel();
 		enclosingPanel.setLayout(new BoxLayout(enclosingPanel, BoxLayout.PAGE_AXIS));
 
+		JLabel infoLabel = new JLabel("Enter your credentials");
 		JLabel usernameLabel = new JLabel("Username");
 		JLabel passwordLabel = new JLabel("Password");
 		JTextField usernameArea = new JTextField(20);
@@ -176,6 +181,7 @@ public class GUI extends JFrame implements WindowListener {
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(registerButton);
 
+		enclosingPanel.add(infoLabel);
 		enclosingPanel.add(usernamePanel);
 		enclosingPanel.add(passwordPanel);
 		enclosingPanel.add(radioPanel);
@@ -197,13 +203,13 @@ public class GUI extends JFrame implements WindowListener {
 										buttonGroup.getSelection().getActionCommand());
 								registerFrame.dispose();
 							} else {
-								passwordArea.setText("Invalid Password!!");
+								infoLabel.setText("Invalid Password!!");
 							}
 						} else {
-							usernameArea.setText("Username already taken!!");
+							infoLabel.setText("Username already taken!!");
 						}
 					} else {
-						usernameArea.setText("Invalid Username!!");
+						infoLabel.setText("Invalid Username!!");
 					}
 				}
 			}
@@ -220,6 +226,7 @@ public class GUI extends JFrame implements WindowListener {
 		registerFrame.setVisible(true);
 	}
 
+	// I have to clean this up. WOW. I mean WOW!
 	private void initMenuPanel() {
 
 		menuPanel = new JPanel();
@@ -229,7 +236,13 @@ public class GUI extends JFrame implements WindowListener {
 		JLabel productLabel = new JLabel("Products");
 		JPanel productInfoPanel = new JPanel();
 		productInfoPanel.setLayout(new BoxLayout(productInfoPanel, BoxLayout.PAGE_AXIS));
-		
+
+		JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
+		quantitySpinner.setPreferredSize(new Dimension(60, 25));
+		quantitySpinner.setEnabled(false);
+		JButton removeFromCartButton = new JButton("Remove from Cart");
+		removeFromCartButton.setEnabled(false);
+
 		class ListListener implements ListSelectionListener {
 
 			@Override
@@ -278,7 +291,7 @@ public class GUI extends JFrame implements WindowListener {
 		itemList.addListSelectionListener(listListener);
 		JScrollPane productScroller = new JScrollPane(itemList);
 		productScroller.setPreferredSize(new Dimension(150, 250));
-		
+
 		JLabel cartLabel = new JLabel("Cart");
 		JList<String> cartList = new JList<String>(this.store.getCurrentAccount().getCartLabels());
 		JScrollPane cartScroller = new JScrollPane(cartList);
@@ -303,6 +316,53 @@ public class GUI extends JFrame implements WindowListener {
 			}
 		}
 		ButtonListener buttonListener = new ButtonListener();
+		
+		class CartListener implements ListSelectionListener {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+
+				@SuppressWarnings("unchecked")
+				JList<String> list = (JList<String>) e.getSource();
+				String cartLabel = list.getSelectedValue();
+
+				if (cartLabel == null) {
+					quantitySpinner.setModel(new SpinnerNumberModel(0, 0, 0, 0));
+					quantitySpinner.setEnabled(false);
+					removeFromCartButton.setEnabled(false);
+				} else {
+					if (e.getValueIsAdjusting()) {
+						String[] labelMembers = cartLabel.split(" ");
+						int id = Integer.parseInt(labelMembers[1]);
+						int quantity = Integer.parseInt(labelMembers[3]);
+						quantitySpinner.setModel(
+								new SpinnerNumberModel(quantity, 0, store.getInventory().get(id).getQuantity(), 1));
+						quantitySpinner.setEnabled(true);
+						quantitySpinner.addChangeListener(new ChangeListener() {
+							@Override
+							public void stateChanged(ChangeEvent e) { 
+								int newQuantity = (int) quantitySpinner.getModel().getValue();
+								store.getCurrentAccount().updateCartWith(id, newQuantity);
+								cartList.setListData(store.getCurrentAccount().getCartLabels());
+								cartScroller.revalidate();
+							}
+						});
+						removeFromCartButton.setEnabled(true);
+						removeFromCartButton.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								store.getCurrentAccount().removeFromCart(id);
+								cartList.setListData(store.getCurrentAccount().getCartLabels());
+								cartScroller.revalidate();
+							}
+						});
+					}
+				}
+			}
+		}
+		CartListener cartListener = new CartListener();
+		
+		cartList.addListSelectionListener(cartListener);
 
 		for (int i = 0; i < catBoxes.length; i++) {
 			catBoxes[i] = new JCheckBox(catagories[i]);
@@ -314,34 +374,39 @@ public class GUI extends JFrame implements WindowListener {
 
 		JPanel itemPanel = new JPanel();
 		itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.PAGE_AXIS));
-
 		JPanel cartPanel = new JPanel();
 		cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.PAGE_AXIS));
-		
+
 		itemEnclosingPanel.add(buttonPanel);
 		itemEnclosingPanel.add(productScroller);
 
 		itemPanel.add(productLabel);
 		itemPanel.add(itemEnclosingPanel);
 		itemPanel.add(productInfoPanel);
-		
+
+		JPanel cartFunctionPanel = new JPanel();
+
+		cartFunctionPanel.add(quantitySpinner);
+		cartFunctionPanel.add(removeFromCartButton);
+
 		cartPanel.add(cartLabel);
 		cartPanel.add(cartScroller);
+		cartPanel.add(cartFunctionPanel);
 
 		JPanel leftPanel = new JPanel();
-		//leftPanel.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT));
+		// leftPanel.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT));
 		JPanel rightPanel = new JPanel();
-		//rightPanel.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT));
-		
+		// rightPanel.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT));
+
 		leftPanel.add(itemPanel);
-		
+
 		rightPanel.add(cartPanel);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Menu Stuff");
 		menu.add(new JMenuItem("Function 1"));
 		menuBar.add(menu);
-		
+
 		this.setJMenuBar(menuBar);
 		menuPanel.add(leftPanel);
 		menuPanel.add(rightPanel);

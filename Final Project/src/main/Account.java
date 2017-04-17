@@ -92,10 +92,18 @@ public class Account {
 	public void addToCart(int id, int quantity) {
 		this.cart.add(new Point(id, quantity));
 	}
+	
+	public void updateCartWith(int id, int quantity) {
+		for (Point item: this.cart) {
+			if (item.x == id) {
+				item.y = quantity;
+			}
+		}
+	}
 
 	public void removeFromCart(int id) {
 		for (int i = 0; i < this.cart.size(); i++) {
-			if (this.cart.get(i).getX() == id) {
+			if (this.cart.get(i).x == id) {
 				this.cart.remove(i);
 			}
 		}
