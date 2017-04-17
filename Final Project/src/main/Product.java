@@ -1,3 +1,4 @@
+package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -9,7 +10,7 @@ public class Product {
 	private int sellerID;
 	private String name;
 	private String description;
-	private String catagory;
+	private String category;
 	private double price;
 	private int quantity;
 
@@ -19,7 +20,7 @@ public class Product {
 		this.sellerID = sellerID;
 		this.name = name;
 		this.description = description;
-		this.catagory = catagory;
+		this.category = catagory;
 		this.price = price;
 		this.quantity = quantity;
 	}
@@ -58,12 +59,12 @@ public class Product {
 		this.description = desc;
 	}
 	
-	public String getCatagory() {
-		return this.catagory;
+	public String getCategory() {
+		return this.category;
 	}
 	
-	public void setCatagory(String catagory) {
-		this.catagory = catagory;
+	public void setCategory(String category) {
+		this.category = category;
 	}
 	
 	public double getPrice() {
@@ -86,29 +87,29 @@ public class Product {
 			int sellerID = Integer.parseInt(in.nextLine());
 			String name = in.nextLine();
 			String description = in.nextLine();
-			String catagory = in.nextLine();
+			String category = in.nextLine();
 			double price = Double.parseDouble(in.nextLine());
 			int quantity = Integer.parseInt(in.nextLine());
 
 			in.close();
-			return new Product(itemNumber, sellerID, name, description, catagory, price, quantity);
+			return new Product(itemNumber, sellerID, name, description, category, price, quantity);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public void writeToFile() {
+	public void writeToFile(String dir) {
 
 		try {
-			File file = new File(Constants.productDir + "_" + this.name + "_" + this.itemNumber);
+			File file = new File(dir + this.name + "_" + this.itemNumber + ".txt");
 			PrintWriter out = new PrintWriter(file);
 
 			out.println(this.itemNumber);
 			out.println(this.sellerID);
 			out.println(this.name);
 			out.println(this.description);
-			out.println(this.catagory);
+			out.println(this.category);
 			out.println(this.price);
 			out.println(this.quantity);
 

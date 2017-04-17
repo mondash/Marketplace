@@ -1,6 +1,5 @@
+package main;
 import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 
@@ -13,16 +12,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JSpinner;
 import javax.swing.JTextPane;
-import javax.swing.JList;
+import javax.swing.border.EmptyBorder;
 
 public class Window extends JFrame {
 
+
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textField;
 	private JPasswordField passwordField;
@@ -117,8 +115,8 @@ public class Window extends JFrame {
 		infoEnclosingPanel.add(panel);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		
-		JList list = new JList();
-		panel.add(list);
+		
+		
 		
 		JLabel lblNewLabel_2 = new JLabel("New label");
 		panel.add(lblNewLabel_2);

@@ -1,3 +1,5 @@
+package main;
+import java.io.File;
 import java.util.ArrayList;
 
 public class Directory {
@@ -36,6 +38,22 @@ public class Directory {
 			}
 		}
 		return null;
-	}	
+	}
+	
+	public void loadAccounts(String dir) {
+		
+		File folder = new File(dir);
+		File[] files = folder.listFiles();
+		
+		for (File f : files) {
+			add(Account.readFromFile(f));
+		}
+	}
+	
+	public void saveAccounts(String dir) {
+		for (Account a : this.accounts) {
+			a.writeToFile(dir);
+		}
+	}
 
 }
