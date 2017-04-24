@@ -68,7 +68,7 @@ public class Account {
 	public String[] getCartLabels() {
 		String[] cartArray = new String[this.cart.size()];
 		for (int i = 0; i < cartArray.length; i++) {
-			cartArray[i] = "ID: " + this.cart.get(i).x + " Quantity: " + this.cart.get(i).y;
+			cartArray[i] = this.cart.get(i).x + " " + this.cart.get(i).y;
 		}
 		return cartArray;
 	}

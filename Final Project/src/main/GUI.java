@@ -88,8 +88,7 @@ public class GUI extends JFrame implements WindowListener {
 		JButton loginButton = new JButton("Login");
 		JButton registerButton = new JButton("Register");
 
-		class ButtonListener implements ActionListener {
-
+		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Login")) {
@@ -98,18 +97,14 @@ public class GUI extends JFrame implements WindowListener {
 						getContentPane().remove(loginPanel);
 						getContentPane().add(menuPanel);
 						revalidate();
-
 					} else {
 						infoLabel.setText("Invalid username/password");
 					}
-
 				} else if (e.getActionCommand().equals("Register")) {
 					initRegisterFrame();
 				}
 			}
-		}
-
-		ButtonListener listener = new ButtonListener();
+		};
 		loginButton.addActionListener(listener);
 		registerButton.addActionListener(listener);
 
@@ -189,8 +184,7 @@ public class GUI extends JFrame implements WindowListener {
 
 		registerPanel.add(enclosingPanel);
 
-		class ButtonListener implements ActionListener {
-
+		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Cancel")) {
@@ -213,9 +207,7 @@ public class GUI extends JFrame implements WindowListener {
 					}
 				}
 			}
-		}
-
-		ButtonListener listener = new ButtonListener();
+		};
 		cancelButton.addActionListener(listener);
 		registerButton.addActionListener(listener);
 
@@ -226,10 +218,27 @@ public class GUI extends JFrame implements WindowListener {
 		registerFrame.setVisible(true);
 	}
 
-	// I have to clean this up. WOW. I mean WOW!
+	// Yay cleanup!!
 	private void initMenuPanel() {
 
 		menuPanel = new JPanel();
+
+		JPanel productPanel = initProductPanel();
+
+		JPanel cartPanel = initCartPanel();
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Menu Stuff");
+		menu.add(new JMenuItem("Function 1"));
+		menuBar.add(menu);
+
+		this.setJMenuBar(menuBar);
+		menuPanel.add(productPanel);
+		menuPanel.add(cartPanel);
+	}
+
+	private JPanel initProductPanel() {
+		JPanel productPanel = new JPanel();
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
@@ -237,17 +246,16 @@ public class GUI extends JFrame implements WindowListener {
 		JPanel productInfoPanel = new JPanel();
 		productInfoPanel.setLayout(new BoxLayout(productInfoPanel, BoxLayout.PAGE_AXIS));
 
-		JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, 0, 0));
-		quantitySpinner.setPreferredSize(new Dimension(60, 25));
-		quantitySpinner.setEnabled(false);
-		JButton removeFromCartButton = new JButton("Remove from Cart");
-		removeFromCartButton.setEnabled(false);
-
-		class ListListener implements ListSelectionListener {
-
+		String[] catagories = store.getInventory().getCategories();
+		JCheckBox[] catBoxes = new JCheckBox[catagories.length];
+		JPanel itemEnclosingPanel = new JPanel();
+		JList<String> itemList = new JList<String>(this.store.getInventory().getProductNames());
+		itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		itemList.setLayoutOrientation(JList.VERTICAL);
+		itemList.setVisibleRowCount(-1);
+		itemList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) e.getSource();
 				String productName = list.getSelectedValue();
@@ -280,103 +288,34 @@ public class GUI extends JFrame implements WindowListener {
 					}
 				}
 			}
-		}
-		ListListener listListener = new ListListener();
-
-		JPanel itemEnclosingPanel = new JPanel();
-		JList<String> itemList = new JList<String>(this.store.getInventory().getProductNames());
-		itemList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		itemList.setLayoutOrientation(JList.VERTICAL);
-		itemList.setVisibleRowCount(-1);
-		itemList.addListSelectionListener(listListener);
+		});
 		JScrollPane productScroller = new JScrollPane(itemList);
 		productScroller.setPreferredSize(new Dimension(150, 250));
-
-		JLabel cartLabel = new JLabel("Cart");
-		JList<String> cartList = new JList<String>(this.store.getCurrentAccount().getCartLabels());
-		JScrollPane cartScroller = new JScrollPane(cartList);
-		cartScroller.setPreferredSize(new Dimension(150, 250));
-
-		String[] catagories = store.getInventory().getCategories();
-		JCheckBox[] catBoxes = new JCheckBox[catagories.length];
-
-		class ButtonListener implements ItemListener {
-
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				ArrayList<String> catagories = new ArrayList<String>();
-				for (JCheckBox box : catBoxes) {
-					if (box.isSelected()) {
-						catagories.add(box.getText());
-					}
-				}
-				String[] catNames = new String[catagories.size()];
-				catNames = catagories.toArray(catNames);
-				itemList.setListData(store.getInventory().getProductNames(catNames));
-			}
-		}
-		ButtonListener buttonListener = new ButtonListener();
-		
-		class CartListener implements ListSelectionListener {
-
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-
-				@SuppressWarnings("unchecked")
-				JList<String> list = (JList<String>) e.getSource();
-				String cartLabel = list.getSelectedValue();
-
-				if (cartLabel == null) {
-					quantitySpinner.setModel(new SpinnerNumberModel(0, 0, 0, 0));
-					quantitySpinner.setEnabled(false);
-					removeFromCartButton.setEnabled(false);
-				} else {
-					if (e.getValueIsAdjusting()) {
-						String[] labelMembers = cartLabel.split(" ");
-						int id = Integer.parseInt(labelMembers[1]);
-						int quantity = Integer.parseInt(labelMembers[3]);
-						quantitySpinner.setModel(
-								new SpinnerNumberModel(quantity, 0, store.getInventory().get(id).getQuantity(), 1));
-						quantitySpinner.setEnabled(true);
-						quantitySpinner.addChangeListener(new ChangeListener() {
-							@Override
-							public void stateChanged(ChangeEvent e) { 
-								int newQuantity = (int) quantitySpinner.getModel().getValue();
-								store.getCurrentAccount().updateCartWith(id, newQuantity);
-								cartList.setListData(store.getCurrentAccount().getCartLabels());
-								cartScroller.revalidate();
-							}
-						});
-						removeFromCartButton.setEnabled(true);
-						removeFromCartButton.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								store.getCurrentAccount().removeFromCart(id);
-								cartList.setListData(store.getCurrentAccount().getCartLabels());
-								cartScroller.revalidate();
-							}
-						});
-					}
-				}
-			}
-		}
-		CartListener cartListener = new CartListener();
-		
-		cartList.addListSelectionListener(cartListener);
 
 		for (int i = 0; i < catBoxes.length; i++) {
 			catBoxes[i] = new JCheckBox(catagories[i]);
 			catBoxes[i].setActionCommand(catagories[i]);
 			catBoxes[i].setSelected(true);
-			catBoxes[i].addItemListener(buttonListener);
 			buttonPanel.add(catBoxes[i]);
+			catBoxes[i].addItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					ArrayList<String> catagories = new ArrayList<String>();
+					for (JCheckBox box : catBoxes) {
+						if (box.isSelected()) {
+							catagories.add(box.getText());
+						}
+					}
+					String[] catNames = new String[catagories.size()];
+					catNames = catagories.toArray(catNames);
+					itemList.setListData(store.getInventory().getProductNames(catNames));
+				}
+			});
 		}
 
 		JPanel itemPanel = new JPanel();
 		itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.PAGE_AXIS));
-		JPanel cartPanel = new JPanel();
-		cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.PAGE_AXIS));
-
 		itemEnclosingPanel.add(buttonPanel);
 		itemEnclosingPanel.add(productScroller);
 
@@ -384,32 +323,67 @@ public class GUI extends JFrame implements WindowListener {
 		itemPanel.add(itemEnclosingPanel);
 		itemPanel.add(productInfoPanel);
 
+		productPanel.add(itemPanel);
+
+		return productPanel;
+	}
+
+	private JPanel initCartPanel() {
+		JPanel cartPanel = new JPanel();
+		cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.PAGE_AXIS));
+
+		JLabel cartLabel = new JLabel("Cart");
+
+		JPanel cartPanels = new JPanel();
+		cartPanels.setBackground(Color.RED);
+		cartPanels.setLayout(new BoxLayout(cartPanels, BoxLayout.PAGE_AXIS));
+		for (String label : store.getCurrentAccount().getCartLabels()) {
+			String[] labelParts = label.split(" ");
+			JPanel itemPanel = initCartItemPanel(Integer.parseInt(labelParts[0]), Integer.parseInt(labelParts[1]));
+			cartPanels.add(itemPanel);
+		}
+
+		// removed here
+
 		JPanel cartFunctionPanel = new JPanel();
 
-		cartFunctionPanel.add(quantitySpinner);
-		cartFunctionPanel.add(removeFromCartButton);
-
 		cartPanel.add(cartLabel);
-		cartPanel.add(cartScroller);
+		cartPanel.add(cartPanels);
 		cartPanel.add(cartFunctionPanel);
 
-		JPanel leftPanel = new JPanel();
-		// leftPanel.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT));
-		JPanel rightPanel = new JPanel();
-		// rightPanel.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT));
+		return cartPanel;
+	}
 
-		leftPanel.add(itemPanel);
+	private JPanel initCartItemPanel(int productID, int quantity) {
 
-		rightPanel.add(cartPanel);
+		JPanel cartItemPanel = new JPanel();
 
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("Menu Stuff");
-		menu.add(new JMenuItem("Function 1"));
-		menuBar.add(menu);
+		JLabel cartItemLabel = new JLabel(store.getInventory().get(productID).getName());
+		JButton removeButton = new JButton("Remove");
+		removeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				store.getCurrentAccount().removeFromCart(productID);
+				cartItemPanel.removeAll();
+				cartItemPanel.setVisible(false);
+			}
+		});
 
-		this.setJMenuBar(menuBar);
-		menuPanel.add(leftPanel);
-		menuPanel.add(rightPanel);
+		JSpinner quantitySpinner = new JSpinner(
+				new SpinnerNumberModel(quantity, 0, store.getInventory().get(productID).getQuantity(), 1));
+		quantitySpinner.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int newQuantity = (int) quantitySpinner.getModel().getValue();
+				store.getCurrentAccount().updateCartWith(productID, newQuantity);
+			}
+		});
+
+		cartItemPanel.add(cartItemLabel);
+		cartItemPanel.add(quantitySpinner);
+		cartItemPanel.add(removeButton);
+
+		return cartItemPanel;
 	}
 
 	@Override
