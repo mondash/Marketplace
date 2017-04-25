@@ -1,6 +1,6 @@
 20
 Nate
 pass
-Buyer
-0.0
+Seller
+653.66
 

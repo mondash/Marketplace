@@ -40,6 +40,20 @@ public class Directory {
 		return null;
 	}
 	
+	public Account[] getAdmins() {
+		ArrayList<Account> admins = new ArrayList<Account>();
+		
+		for (Account a : this.accounts) {
+			if (a.getType().equals("Admin")) {
+				admins.add(a);
+			}
+		}
+		Account[] adminArray = new Account[admins.size()];
+		adminArray = (Account[]) admins.toArray(adminArray);
+		
+		return adminArray;
+	}
+	
 	public void loadAccounts(String dir) {
 		
 		File folder = new File(dir);

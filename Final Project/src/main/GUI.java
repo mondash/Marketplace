@@ -222,6 +222,7 @@ public class GUI extends JFrame implements WindowListener {
 	private void initMenuPanel() {
 
 		menuPanel = new JPanel();
+		menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.LINE_AXIS));
 
 		JPanel productPanel = initProductPanel();
 
@@ -232,9 +233,27 @@ public class GUI extends JFrame implements WindowListener {
 		menu.add(new JMenuItem("Function 1"));
 		menuBar.add(menu);
 
+		
 		this.setJMenuBar(menuBar);
 		menuPanel.add(productPanel);
 		menuPanel.add(cartPanel);
+	}
+	
+	private void revalidateMenuPanel() {
+		JPanel productPanel = initProductPanel();
+
+		JPanel cartPanel = initCartPanel();
+
+		JMenuBar menuBar = new JMenuBar();
+		JMenu menu = new JMenu("Menu Stuff");
+		menu.add(new JMenuItem("Function 1"));
+		menuBar.add(menu);
+
+		menuPanel.removeAll();
+		this.setJMenuBar(menuBar);
+		menuPanel.add(productPanel);
+		menuPanel.add(cartPanel);
+		menuPanel.revalidate();
 	}
 
 	private JPanel initProductPanel() {
@@ -243,8 +262,10 @@ public class GUI extends JFrame implements WindowListener {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.PAGE_AXIS));
 		JLabel productLabel = new JLabel("Products");
+		productLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+		productLabel.setAlignmentX(CENTER_ALIGNMENT);
 		JPanel productInfoPanel = new JPanel();
-		productInfoPanel.setLayout(new BoxLayout(productInfoPanel, BoxLayout.PAGE_AXIS));
+		
 
 		String[] catagories = store.getInventory().getCategories();
 		JCheckBox[] catBoxes = new JCheckBox[catagories.length];
@@ -259,33 +280,48 @@ public class GUI extends JFrame implements WindowListener {
 				@SuppressWarnings("unchecked")
 				JList<String> list = (JList<String>) e.getSource();
 				String productName = list.getSelectedValue();
-
+				JPanel prodInfoPanel = new JPanel();
+				prodInfoPanel.setLayout(new BoxLayout(prodInfoPanel, BoxLayout.PAGE_AXIS));
+				
 				if (productName == null) {
-					productInfoPanel.setVisible(false);
-					menuPanel.revalidate();
+					//prodInfoPanel.setVisible(false);
+					productInfoPanel.removeAll();
+					revalidateMenuPanel();
 				} else {
-					if (e.getValueIsAdjusting()) {
+					//if (e.getValueIsAdjusting()) {
+						
 						productInfoPanel.removeAll();
-						productInfoPanel.setVisible(true);
+						//prodInfoPanel.setVisible(true);
 
 						Product prod = store.getInventory().get(productName);
-						JLabel nameLabel = new JLabel(productName);
+						JLabel nameLabel = new JLabel(prod.getName());
+						System.out.println(productName);
 						JLabel descriptionLabel = new JLabel(prod.getDescription());
 						JLabel catagoryLabel = new JLabel(prod.getCategory());
 						JLabel idLabel = new JLabel("" + prod.getItemID());
 						JLabel sellerIDLabel = new JLabel("" + prod.getSellerID());
 						JLabel quantityLabel = new JLabel("" + prod.getQuantity());
 						JLabel priceLabel = new JLabel("" + prod.getPrice());
+						JButton addToCartButton = new JButton("Add to Cart");
+						addToCartButton.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								store.addToCart(prod.getItemID(), 1);
+								revalidateMenuPanel();
+							}
+						});
 
-						productInfoPanel.add(nameLabel);
-						productInfoPanel.add(descriptionLabel);
-						productInfoPanel.add(catagoryLabel);
-						productInfoPanel.add(idLabel);
-						productInfoPanel.add(sellerIDLabel);
-						productInfoPanel.add(quantityLabel);
-						productInfoPanel.add(priceLabel);
+						prodInfoPanel.add(nameLabel);
+						prodInfoPanel.add(descriptionLabel);
+						prodInfoPanel.add(catagoryLabel);
+						prodInfoPanel.add(idLabel);
+						prodInfoPanel.add(sellerIDLabel);
+						prodInfoPanel.add(quantityLabel);
+						prodInfoPanel.add(priceLabel);
+						prodInfoPanel.add(addToCartButton);
+						productInfoPanel.add(prodInfoPanel);
 						menuPanel.revalidate();
-					}
+					//}
 				}
 			}
 		});
@@ -333,23 +369,48 @@ public class GUI extends JFrame implements WindowListener {
 		cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.PAGE_AXIS));
 
 		JLabel cartLabel = new JLabel("Cart");
+		cartLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+		cartLabel.setAlignmentX(CENTER_ALIGNMENT);
 
 		JPanel cartPanels = new JPanel();
-		cartPanels.setBackground(Color.RED);
+		cartPanels.setMaximumSize(new Dimension(150, 250));
 		cartPanels.setLayout(new BoxLayout(cartPanels, BoxLayout.PAGE_AXIS));
+		
+		JScrollPane cartScroller = new JScrollPane(cartPanels);
+		cartScroller.setPreferredSize(new Dimension(150, 250));
 		for (String label : store.getCurrentAccount().getCartLabels()) {
 			String[] labelParts = label.split(" ");
-			JPanel itemPanel = initCartItemPanel(Integer.parseInt(labelParts[0]), Integer.parseInt(labelParts[1]));
+			int productID = Integer.parseInt(labelParts[0]);
+			int quantity = Integer.parseInt(labelParts[1]);
+			JPanel itemPanel = initCartItemPanel(productID, quantity);
+			itemPanel.setMaximumSize(new Dimension(300, itemPanel.getPreferredSize().height));
 			cartPanels.add(itemPanel);
 		}
+		
+		JButton checkoutButton = new JButton("Checkout");
+		checkoutButton.setAlignmentX(CENTER_ALIGNMENT);
+		checkoutButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				store.checkOut();
+				revalidateMenuPanel();
+			}
+		});
 
-		// removed here
-
-		JPanel cartFunctionPanel = new JPanel();
+		double cartTotal = store.getCartTotal();
+		JLabel totalLabel = new JLabel("$" + String.format("%.2f", cartTotal));
+		checkoutButton.setEnabled(true);
+		if (cartTotal > store.getCurrentAccount().getMoney()) {
+			checkoutButton.setEnabled(false);
+		}
+		
+		JPanel infoPanel = new JPanel();
+		infoPanel.add(totalLabel);
+		infoPanel.add(checkoutButton);
 
 		cartPanel.add(cartLabel);
-		cartPanel.add(cartPanels);
-		cartPanel.add(cartFunctionPanel);
+		cartPanel.add(cartScroller);
+		cartPanel.add(infoPanel);
 
 		return cartPanel;
 	}
@@ -365,7 +426,7 @@ public class GUI extends JFrame implements WindowListener {
 			public void actionPerformed(ActionEvent e) {
 				store.getCurrentAccount().removeFromCart(productID);
 				cartItemPanel.removeAll();
-				cartItemPanel.setVisible(false);
+				revalidateMenuPanel();
 			}
 		});
 
@@ -376,6 +437,7 @@ public class GUI extends JFrame implements WindowListener {
 			public void stateChanged(ChangeEvent e) {
 				int newQuantity = (int) quantitySpinner.getModel().getValue();
 				store.getCurrentAccount().updateCartWith(productID, newQuantity);
+				revalidateMenuPanel();
 			}
 		});
 

@@ -90,6 +90,12 @@ public class Account {
 	}
 
 	public void addToCart(int id, int quantity) {
+		for (Point item: this.cart) {
+			if (item.x == id) {
+				item.y++;
+				return;
+			}
+		}
 		this.cart.add(new Point(id, quantity));
 	}
 	
@@ -97,6 +103,7 @@ public class Account {
 		for (Point item: this.cart) {
 			if (item.x == id) {
 				item.y = quantity;
+				return;
 			}
 		}
 	}
@@ -110,7 +117,7 @@ public class Account {
 	}
 
 	public void checkOut() {
-
+		this.cart.clear();
 	}
 
 	public boolean isPassword(char[] letters) {
