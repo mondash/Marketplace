@@ -123,7 +123,6 @@ public class Product {
 				}
 			}
 			out.println();
-			
 			out.println(this.category);
 			out.println(this.price);
 			out.println(this.quantity);
