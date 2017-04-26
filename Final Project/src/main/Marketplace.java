@@ -11,7 +11,8 @@ public class Marketplace {
 	private Directory accounts;
 	private Inventory inventory;
 	private Account currentAccount;
-	private static int id = 0;
+	private static int ID = 0;
+	private static double SELLER_REVENUE_PERCENTAGE = .9;
 
 	public Marketplace() {
 
@@ -42,8 +43,8 @@ public class Marketplace {
 	}
 
 	private int assignID() {
-		id++;
-		return id;
+		ID++;
+		return ID;
 	}
 
 	public void addAccount(String name, char[] password, String type) {
@@ -78,6 +79,16 @@ public class Marketplace {
 	public void removeFromCart(int id) {
 		this.currentAccount.removeFromCart(id);
 	}
+	
+	public double getCartTotal() {
+		double total = 0.0;
+		
+		for (Point p : this.currentAccount.getCart()) {
+			Product product = this.inventory.get(p.x);
+			total += product.getPrice() * p.y;
+		}
+		return total;
+	}
 
 	public void checkOut() {
 		conductTransaction(this.currentAccount.getCart());
@@ -89,12 +100,26 @@ public class Marketplace {
 		for (Point p : cart) {
 			Product product = this.inventory.get(p.x);
 			Account seller = this.accounts.get(product.getSellerID());
-			seller.addMoney(product.getPrice() * p.y);
+			this.currentAccount.payMoney(product.getPrice() * p.y);
+			seller.addMoney(product.getPrice() * SELLER_REVENUE_PERCENTAGE * p.y);
+			payAdmins(product.getPrice() * (1 - SELLER_REVENUE_PERCENTAGE) * p.y);
 		}
 	}
 
 	public void updateInventory(Point[] cart) {
-
+		for (Point p : cart) {
+			Product product = this.inventory.get(p.x);
+			product.purchase(p.y);
+		}
+	}
+	
+	public void payAdmins(double adminRevenue) {
+		Account[] admins = this.accounts.getAdmins();
+		
+		double revenuePerAdmin = adminRevenue / admins.length;
+		for (Account a : admins) {
+			a.addMoney(revenuePerAdmin);
+		}
 	}
 	
 	public Account getCurrentAccount() {
@@ -114,7 +139,8 @@ public class Marketplace {
 			File file = new File(constantsDir);
 			Scanner in = new Scanner(file);
 
-			id = Integer.parseInt(in.nextLine());
+			ID = Integer.parseInt(in.nextLine());
+			SELLER_REVENUE_PERCENTAGE = Double.parseDouble(in.nextLine());
 
 			in.close();
 		} catch (FileNotFoundException e) {
@@ -127,7 +153,8 @@ public class Marketplace {
 			File file = new File(constantsDir);
 			PrintWriter out = new PrintWriter(file);
 			
-			out.println(id);
+			out.println(ID);
+			out.println(SELLER_REVENUE_PERCENTAGE);
 			
 			out.close();
 		} catch (FileNotFoundException e) {

@@ -42,6 +42,10 @@ public class Account {
 	public String getName() {
 		return this.name;
 	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getType() {
 		return this.type;
@@ -68,7 +72,7 @@ public class Account {
 	public String[] getCartLabels() {
 		String[] cartArray = new String[this.cart.size()];
 		for (int i = 0; i < cartArray.length; i++) {
-			cartArray[i] = "ID: " + this.cart.get(i).x + " Quantity: " + this.cart.get(i).y;
+			cartArray[i] = this.cart.get(i).x + " " + this.cart.get(i).y;
 		}
 		return cartArray;
 	}
@@ -90,19 +94,34 @@ public class Account {
 	}
 
 	public void addToCart(int id, int quantity) {
+		for (Point item: this.cart) {
+			if (item.x == id) {
+				item.y++;
+				return;
+			}
+		}
 		this.cart.add(new Point(id, quantity));
+	}
+	
+	public void updateCartWith(int id, int quantity) {
+		for (Point item: this.cart) {
+			if (item.x == id) {
+				item.y = quantity;
+				return;
+			}
+		}
 	}
 
 	public void removeFromCart(int id) {
 		for (int i = 0; i < this.cart.size(); i++) {
-			if (this.cart.get(i).getX() == id) {
+			if (this.cart.get(i).x == id) {
 				this.cart.remove(i);
 			}
 		}
 	}
 
 	public void checkOut() {
-
+		this.cart.clear();
 	}
 
 	public boolean isPassword(char[] letters) {
@@ -147,7 +166,8 @@ public class Account {
 
 	public void writeToFile(String dir) {
 		try {
-			File file = new File(dir + this.name + "_" + this.id + ".txt");
+			File file = new File(dir + "User" + "_" + this.id + ".txt");
+			//File file = new File(dir + this.name + "_" + this.id + ".txt");
 			PrintWriter out = new PrintWriter(file);
 
 			out.println(this.id);
