@@ -100,7 +100,7 @@ public class Marketplace {
 		for (Point p : cart) {
 			Product product = this.inventory.get(p.x);
 			Account seller = this.accounts.get(product.getSellerID());
-			this.currentAccount.payMoney(product.getPrice() * p.y);
+			this.currentAccount.removeMoney(product.getPrice() * p.y);
 			seller.addMoney(product.getPrice() * SELLER_REVENUE_PERCENTAGE * p.y);
 			payAdmins(product.getPrice() * (1 - SELLER_REVENUE_PERCENTAGE) * p.y);
 		}

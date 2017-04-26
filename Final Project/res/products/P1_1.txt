@@ -2,6 +2,6 @@
 12
 P1
 desc p1
-cat1
+catagory 1
 11.0
 200

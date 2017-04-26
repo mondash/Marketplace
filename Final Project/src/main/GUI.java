@@ -22,11 +22,13 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -252,7 +254,6 @@ public class GUI extends JFrame implements WindowListener {
 	private void initChangeNameFrame() {
 
 		JFrame changeNameFrame = new JFrame();
-		//changeNameFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
 
 		JPanel changeNamePanel = new JPanel();
 		changeNamePanel.setLayout(new BoxLayout(changeNamePanel, BoxLayout.PAGE_AXIS));
@@ -301,6 +302,255 @@ public class GUI extends JFrame implements WindowListener {
 		changeNameFrame.setVisible(true);
 	}
 
+	private void initChangePasswordFrame() {
+
+		JFrame changePasswordFrame = new JFrame();
+
+		JPanel changePasswordPanel = new JPanel();
+		changePasswordPanel.setLayout(new BoxLayout(changePasswordPanel, BoxLayout.PAGE_AXIS));
+
+		JLabel infoLabel = new JLabel("Enter new password");
+
+		JTextField passwordField = new JTextField(20);
+
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("OK")) {
+					String password = passwordField.getText();
+					if (password == null || password.equals("")) {
+						infoLabel.setText("Invalid password!");
+					} else {
+						store.getCurrentAccount().setPassword(password);
+						changePasswordFrame.dispose();
+					}
+				} else if (e.getActionCommand().equals("Cancel")) {
+					changePasswordFrame.dispose();
+				}
+			}
+		};
+
+		JButton acceptButton = new JButton("OK");
+		acceptButton.addActionListener(listener);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(listener);
+
+		JPanel buttonPanel = new JPanel();
+
+		buttonPanel.add(acceptButton);
+		buttonPanel.add(cancelButton);
+
+		changePasswordPanel.add(infoLabel);
+		changePasswordPanel.add(passwordField);
+		changePasswordPanel.add(buttonPanel);
+
+		changePasswordFrame.add(changePasswordPanel);
+
+		changePasswordFrame.setResizable(false);
+		changePasswordFrame.pack();
+		changePasswordFrame.setLocationRelativeTo(this);
+		changePasswordFrame.setVisible(true);
+	}
+
+	private void initAddFundsFrame() {
+
+		JFrame addFundsFrame = new JFrame();
+
+		JPanel addFundsPanel = new JPanel();
+		addFundsPanel.setLayout(new BoxLayout(addFundsPanel, BoxLayout.PAGE_AXIS));
+
+		JLabel infoLabel = new JLabel("Select number of funds to add");
+
+		JSpinner fundsSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10000, 1));
+
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("OK")) {
+					store.getCurrentAccount().addMoney((int) fundsSpinner.getValue());
+					addFundsFrame.dispose();
+				} else if (e.getActionCommand().equals("Cancel")) {
+					addFundsFrame.dispose();
+				}
+			}
+		};
+
+		JButton acceptButton = new JButton("OK");
+		acceptButton.addActionListener(listener);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(listener);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(acceptButton);
+		buttonPanel.add(cancelButton);
+
+		addFundsPanel.add(infoLabel);
+		addFundsPanel.add(fundsSpinner);
+		addFundsPanel.add(buttonPanel);
+
+		addFundsFrame.add(addFundsPanel);
+		addFundsFrame.setResizable(false);
+		addFundsFrame.pack();
+		addFundsFrame.setLocationRelativeTo(this);
+		addFundsFrame.setVisible(true);
+	}
+
+	private void initRemoveFundsFrame() {
+
+		JFrame removeFundsFrame = new JFrame();
+
+		JPanel removeFundsPanel = new JPanel();
+		removeFundsPanel.setLayout(new BoxLayout(removeFundsPanel, BoxLayout.PAGE_AXIS));
+
+		JLabel infoLabel = new JLabel("Select number of funds to withdraw");
+
+		JSpinner fundsSpinner = new JSpinner(
+				new SpinnerNumberModel(0, 0, String.format("$%.2d", store.getCurrentAccount().getMoney()), 1));
+
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("OK")) {
+					store.getCurrentAccount().removeMoney((double) fundsSpinner.getValue());
+					removeFundsFrame.dispose();
+				} else if (e.getActionCommand().equals("Cancel")) {
+					removeFundsFrame.dispose();
+				}
+			}
+		};
+
+		JButton acceptButton = new JButton("OK");
+		acceptButton.addActionListener(listener);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(listener);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(acceptButton);
+		buttonPanel.add(cancelButton);
+
+		removeFundsPanel.add(infoLabel);
+		removeFundsPanel.add(fundsSpinner);
+		removeFundsPanel.add(buttonPanel);
+
+		removeFundsFrame.add(removeFundsPanel);
+		removeFundsFrame.setResizable(false);
+		removeFundsFrame.pack();
+		removeFundsFrame.setLocationRelativeTo(this);
+		removeFundsFrame.setVisible(true);
+	}
+
+	private void initAddProductFrame() {
+
+		JFrame addProductFrame = new JFrame();
+
+		JPanel addProductPanel = new JPanel();
+		addProductPanel.setLayout(new BoxLayout(addProductPanel, BoxLayout.PAGE_AXIS));
+
+		JLabel infoLabel = new JLabel("Enter Product Information");
+
+		JPanel namePanel = new JPanel();
+
+		JLabel nameLabel = new JLabel("Name");
+		JTextField nameField = new JTextField(20);
+
+		namePanel.add(nameLabel);
+		namePanel.add(nameField);
+
+		JPanel descriptionPanel = new JPanel();
+
+		JLabel descriptionLabel = new JLabel("Description");
+		JTextArea descriptionArea = new JTextArea();
+		JScrollPane textScroller = new JScrollPane(descriptionArea);
+		textScroller.setPreferredSize(new Dimension(200, 40));
+
+		descriptionPanel.add(descriptionLabel);
+		descriptionPanel.add(textScroller);
+
+		JPanel catagoryPanel = new JPanel();
+
+		JLabel catagoryLabel = new JLabel("Catagory");
+		JTextField catagoryField = new JTextField(20);
+
+		catagoryPanel.add(catagoryLabel);
+		catagoryPanel.add(catagoryField);
+
+		JPanel pricePanel = new JPanel();
+
+		JLabel priceLabel = new JLabel("Price");
+		JSpinner priceSpinner = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 10000.0, 1.0));
+
+		pricePanel.add(priceLabel);
+		pricePanel.add(priceSpinner);
+
+		JPanel quantityPanel = new JPanel();
+
+		JLabel quantityLabel = new JLabel("Quantity");
+		JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(0, 0, 10000, 1));
+
+		quantityPanel.add(quantityLabel);
+		quantityPanel.add(quantitySpinner);
+
+		JPanel buttonPanel = new JPanel();
+
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("Add")) {
+					String name = nameField.getText();
+					if (name != null && !name.equals("")) {
+						String description = descriptionArea.getText();
+						if (description != null && !description.equals("")) {
+							String catagory = catagoryField.getText();
+							if (catagory != null && !catagory.equals("")) {
+								double price = (double) priceSpinner.getValue();
+								if (price > 0.0) {
+									int quantity = (int) quantitySpinner.getValue();
+
+									store.addProduct(store.getCurrentAccount().getID(), name, description, catagory,
+											price, quantity);
+									addProductFrame.dispose();
+									revalidateMenuPanel();
+								} else {
+									infoLabel.setText("Price cannot be 0");
+								}
+							} else {
+								infoLabel.setText("Invalid catagory");
+							}
+						} else {
+							infoLabel.setText("Invalid description");
+						}
+					} else {
+						infoLabel.setText("Invalid name");
+					}
+				} else if (e.getActionCommand().equals("Cancel")) {
+					addProductFrame.dispose();
+				}
+			}
+		};
+
+		JButton addButton = new JButton("Add");
+		addButton.addActionListener(listener);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(listener);
+		
+		buttonPanel.add(addButton);
+		buttonPanel.add(cancelButton);
+		addProductPanel.add(infoLabel);
+		addProductPanel.add(namePanel);
+		addProductPanel.add(descriptionPanel);
+		addProductPanel.add(catagoryPanel);
+		addProductPanel.add(pricePanel);
+		addProductPanel.add(quantityPanel);
+		addProductPanel.add(buttonPanel);
+
+		addProductFrame.add(addProductPanel);
+		addProductFrame.setResizable(true);
+		addProductFrame.pack();
+		addProductFrame.setLocationRelativeTo(this);
+		addProductFrame.setVisible(true);
+
+	}
+
 	private JMenuBar initMenuBar() {
 
 		JMenuBar menuBar = new JMenuBar();
@@ -310,38 +560,68 @@ public class GUI extends JFrame implements WindowListener {
 		ActionListener settingsMenuListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getActionCommand().equals("Edit Name")) {
+				if (e.getActionCommand().equals("Logout")) {
+					store.logout();
+					menuPanel.removeAll();
+					remove(menuPanel);
+					initLoginPanel();
+					add(loginPanel, BorderLayout.CENTER);
+					revalidate();
+				} else if (e.getActionCommand().equals("Edit Name")) {
 					initChangeNameFrame();
+				} else if (e.getActionCommand().equals("Edit Password")) {
+					initChangePasswordFrame();
+				} else if (e.getActionCommand().equals("Display Funds")) {
+					JOptionPane.showMessageDialog(null, String.format("$%.2f", store.getCurrentAccount().getMoney()));
+				} else if (e.getActionCommand().equals("Add Funds")) {
+					initAddFundsFrame();
+				} else if (e.getActionCommand().equals("Withdraw Funds")) {
+					initRemoveFundsFrame();
+				} else if (e.getActionCommand().equals("Add Product")) {
+					initAddProductFrame();
 				}
 			}
 		};
 
-		JMenuItem logoutItem = new JMenuItem();
+		JMenuItem logoutItem = new JMenuItem("Logout");
+		logoutItem.addActionListener(settingsMenuListener);
 
 		JMenu accountInfoMenu = new JMenu("Account Info");
 
 		JMenuItem editNameItem = new JMenuItem("Edit Name");
 		editNameItem.addActionListener(settingsMenuListener);
 		JMenuItem editPasswordItem = new JMenuItem("Edit Password");
+		editPasswordItem.addActionListener(settingsMenuListener);
 
 		accountInfoMenu.add(editNameItem);
 		accountInfoMenu.add(editPasswordItem);
 
 		JMenu fundsMenu = new JMenu("Manage Funds");
 
+		JMenuItem displayFundsItem = new JMenuItem("Display Funds");
+		displayFundsItem.addActionListener(settingsMenuListener);
 		JMenuItem addFundsItem = new JMenuItem("Add Funds");
+		addFundsItem.addActionListener(settingsMenuListener);
 		JMenuItem withdrawFundsItem = new JMenuItem("Withdraw Funds");
+		withdrawFundsItem.addActionListener(settingsMenuListener);
 
+		fundsMenu.add(displayFundsItem);
 		fundsMenu.add(addFundsItem);
 		fundsMenu.add(withdrawFundsItem);
 
 		JMenu sellerFunctionsMenu = new JMenu("Seller Functions");
 
 		JMenuItem addProductItem = new JMenuItem("Add Product");
-		JMenuItem restockProductItem = new JMenuItem("Restock Product");
+		addProductItem.addActionListener(settingsMenuListener);
+		JMenuItem editProductItem = new JMenuItem("Edit Product");
+		editProductItem.addActionListener(settingsMenuListener);
+
+		if (!store.getCurrentAccount().getType().equals("Seller")) {
+			sellerFunctionsMenu.setEnabled(false);
+		}
 
 		sellerFunctionsMenu.add(addProductItem);
-		sellerFunctionsMenu.add(restockProductItem);
+		sellerFunctionsMenu.add(editProductItem);
 
 		JMenu adminFunctionsMenu = new JMenu("Admin Functions");
 
@@ -537,7 +817,7 @@ public class GUI extends JFrame implements WindowListener {
 		});
 
 		JSpinner quantitySpinner = new JSpinner(
-				new SpinnerNumberModel(quantity, 0, store.getInventory().get(productID).getQuantity(), 1));
+				new SpinnerNumberModel(quantity, 1, store.getInventory().get(productID).getQuantity(), 1));
 		quantitySpinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {

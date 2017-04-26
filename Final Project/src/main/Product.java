@@ -86,7 +86,13 @@ public class Product {
 			int itemNumber = Integer.parseInt(in.nextLine());
 			int sellerID = Integer.parseInt(in.nextLine());
 			String name = in.nextLine();
-			String description = in.nextLine();
+			String[] descriptionArray = in.nextLine().split("\\+");
+			String description = "";
+			for (String s: descriptionArray) {
+				description += s + "\n";
+			}
+			
+			
 			String category = in.nextLine();
 			double price = Double.parseDouble(in.nextLine());
 			int quantity = Integer.parseInt(in.nextLine());
@@ -108,7 +114,16 @@ public class Product {
 			out.println(this.itemNumber);
 			out.println(this.sellerID);
 			out.println(this.name);
-			out.println(this.description);
+			
+			String[] descriptionLines = this.description.split("\n");
+			for (int i = 0; i < descriptionLines.length; i++) {
+				out.print(descriptionLines[i]);
+				if (i < descriptionLines.length - 1) {
+					out.print("+");
+				}
+			}
+			out.println();
+			
 			out.println(this.category);
 			out.println(this.price);
 			out.println(this.quantity);

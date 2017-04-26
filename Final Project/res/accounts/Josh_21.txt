@@ -1,6 +1,0 @@
-21
-Josh
-pass
-Buyer
-200.0
-10,4
