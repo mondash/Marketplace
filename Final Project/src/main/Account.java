@@ -42,6 +42,10 @@ public class Account {
 	public String getName() {
 		return this.name;
 	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getType() {
 		return this.type;
@@ -162,7 +166,8 @@ public class Account {
 
 	public void writeToFile(String dir) {
 		try {
-			File file = new File(dir + this.name + "_" + this.id + ".txt");
+			File file = new File(dir + "User" + "_" + this.id + ".txt");
+			//File file = new File(dir + this.name + "_" + this.id + ".txt");
 			PrintWriter out = new PrintWriter(file);
 
 			out.println(this.id);

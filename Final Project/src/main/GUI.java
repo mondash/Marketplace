@@ -228,32 +228,138 @@ public class GUI extends JFrame implements WindowListener {
 
 		JPanel cartPanel = initCartPanel();
 
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("Menu Stuff");
-		menu.add(new JMenuItem("Function 1"));
-		menuBar.add(menu);
+		JMenuBar menuBar = initMenuBar();
 
-		
 		this.setJMenuBar(menuBar);
 		menuPanel.add(productPanel);
 		menuPanel.add(cartPanel);
 	}
-	
+
 	private void revalidateMenuPanel() {
 		JPanel productPanel = initProductPanel();
 
 		JPanel cartPanel = initCartPanel();
 
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("Menu Stuff");
-		menu.add(new JMenuItem("Function 1"));
-		menuBar.add(menu);
+		JMenuBar menuBar = initMenuBar();
 
 		menuPanel.removeAll();
 		this.setJMenuBar(menuBar);
 		menuPanel.add(productPanel);
 		menuPanel.add(cartPanel);
 		menuPanel.revalidate();
+	}
+
+	private void initChangeNameFrame() {
+
+		JFrame changeNameFrame = new JFrame();
+		//changeNameFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
+
+		JPanel changeNamePanel = new JPanel();
+		changeNamePanel.setLayout(new BoxLayout(changeNamePanel, BoxLayout.PAGE_AXIS));
+
+		JLabel infoLabel = new JLabel("Enter new name");
+
+		JTextField nameField = new JTextField(20);
+
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("OK")) {
+					String name = nameField.getText();
+					if (name == null || name.equals("") || store.getDir().inDir(name)) {
+						infoLabel.setText("Invalid name / Name already taken");
+					} else {
+						store.getCurrentAccount().setName(name);
+						changeNameFrame.dispose();
+						revalidateMenuPanel();
+					}
+				} else if (e.getActionCommand().equals("Cancel")) {
+					changeNameFrame.dispose();
+				}
+			}
+		};
+
+		JButton acceptButton = new JButton("OK");
+		acceptButton.addActionListener(listener);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(listener);
+
+		JPanel buttonPanel = new JPanel();
+
+		buttonPanel.add(acceptButton);
+		buttonPanel.add(cancelButton);
+
+		changeNamePanel.add(infoLabel);
+		changeNamePanel.add(nameField);
+		changeNamePanel.add(buttonPanel);
+
+		changeNameFrame.add(changeNamePanel);
+
+		changeNameFrame.setResizable(false);
+		changeNameFrame.pack();
+		changeNameFrame.setLocationRelativeTo(this);
+		changeNameFrame.setVisible(true);
+	}
+
+	private JMenuBar initMenuBar() {
+
+		JMenuBar menuBar = new JMenuBar();
+
+		JMenu settingsMenu = new JMenu("Settings");
+
+		ActionListener settingsMenuListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getActionCommand().equals("Edit Name")) {
+					initChangeNameFrame();
+				}
+			}
+		};
+
+		JMenuItem logoutItem = new JMenuItem();
+
+		JMenu accountInfoMenu = new JMenu("Account Info");
+
+		JMenuItem editNameItem = new JMenuItem("Edit Name");
+		editNameItem.addActionListener(settingsMenuListener);
+		JMenuItem editPasswordItem = new JMenuItem("Edit Password");
+
+		accountInfoMenu.add(editNameItem);
+		accountInfoMenu.add(editPasswordItem);
+
+		JMenu fundsMenu = new JMenu("Manage Funds");
+
+		JMenuItem addFundsItem = new JMenuItem("Add Funds");
+		JMenuItem withdrawFundsItem = new JMenuItem("Withdraw Funds");
+
+		fundsMenu.add(addFundsItem);
+		fundsMenu.add(withdrawFundsItem);
+
+		JMenu sellerFunctionsMenu = new JMenu("Seller Functions");
+
+		JMenuItem addProductItem = new JMenuItem("Add Product");
+		JMenuItem restockProductItem = new JMenuItem("Restock Product");
+
+		sellerFunctionsMenu.add(addProductItem);
+		sellerFunctionsMenu.add(restockProductItem);
+
+		JMenu adminFunctionsMenu = new JMenu("Admin Functions");
+
+		JMenuItem giveAdminAcessItem = new JMenuItem("Give Admin Access");
+		JMenuItem changeRevenuePercentageItem = new JMenuItem("Change Revenue Percentage");
+
+		adminFunctionsMenu.add(giveAdminAcessItem);
+		adminFunctionsMenu.add(changeRevenuePercentageItem);
+
+		settingsMenu.add(logoutItem);
+		settingsMenu.add(accountInfoMenu);
+		settingsMenu.add(fundsMenu);
+		settingsMenu.add(sellerFunctionsMenu);
+		settingsMenu.add(adminFunctionsMenu);
+
+		menuBar.add(settingsMenu);
+
+		return menuBar;
 	}
 
 	private JPanel initProductPanel() {
@@ -265,7 +371,6 @@ public class GUI extends JFrame implements WindowListener {
 		productLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
 		productLabel.setAlignmentX(CENTER_ALIGNMENT);
 		JPanel productInfoPanel = new JPanel();
-		
 
 		String[] catagories = store.getInventory().getCategories();
 		JCheckBox[] catBoxes = new JCheckBox[catagories.length];
@@ -282,46 +387,46 @@ public class GUI extends JFrame implements WindowListener {
 				String productName = list.getSelectedValue();
 				JPanel prodInfoPanel = new JPanel();
 				prodInfoPanel.setLayout(new BoxLayout(prodInfoPanel, BoxLayout.PAGE_AXIS));
-				
+
 				if (productName == null) {
-					//prodInfoPanel.setVisible(false);
+					// prodInfoPanel.setVisible(false);
 					productInfoPanel.removeAll();
 					revalidateMenuPanel();
 				} else {
-					//if (e.getValueIsAdjusting()) {
-						
-						productInfoPanel.removeAll();
-						//prodInfoPanel.setVisible(true);
+					// if (e.getValueIsAdjusting()) {
 
-						Product prod = store.getInventory().get(productName);
-						JLabel nameLabel = new JLabel(prod.getName());
-						System.out.println(productName);
-						JLabel descriptionLabel = new JLabel(prod.getDescription());
-						JLabel catagoryLabel = new JLabel(prod.getCategory());
-						JLabel idLabel = new JLabel("" + prod.getItemID());
-						JLabel sellerIDLabel = new JLabel("" + prod.getSellerID());
-						JLabel quantityLabel = new JLabel("" + prod.getQuantity());
-						JLabel priceLabel = new JLabel("" + prod.getPrice());
-						JButton addToCartButton = new JButton("Add to Cart");
-						addToCartButton.addActionListener(new ActionListener() {
-							@Override
-							public void actionPerformed(ActionEvent e) {
-								store.addToCart(prod.getItemID(), 1);
-								revalidateMenuPanel();
-							}
-						});
+					productInfoPanel.removeAll();
+					// prodInfoPanel.setVisible(true);
 
-						prodInfoPanel.add(nameLabel);
-						prodInfoPanel.add(descriptionLabel);
-						prodInfoPanel.add(catagoryLabel);
-						prodInfoPanel.add(idLabel);
-						prodInfoPanel.add(sellerIDLabel);
-						prodInfoPanel.add(quantityLabel);
-						prodInfoPanel.add(priceLabel);
-						prodInfoPanel.add(addToCartButton);
-						productInfoPanel.add(prodInfoPanel);
-						menuPanel.revalidate();
-					//}
+					Product prod = store.getInventory().get(productName);
+					JLabel nameLabel = new JLabel(prod.getName());
+					System.out.println(productName);
+					JLabel descriptionLabel = new JLabel(prod.getDescription());
+					JLabel catagoryLabel = new JLabel(prod.getCategory());
+					JLabel idLabel = new JLabel("" + prod.getItemID());
+					JLabel sellerIDLabel = new JLabel("" + prod.getSellerID());
+					JLabel quantityLabel = new JLabel("" + prod.getQuantity());
+					JLabel priceLabel = new JLabel("" + prod.getPrice());
+					JButton addToCartButton = new JButton("Add to Cart");
+					addToCartButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							store.addToCart(prod.getItemID(), 1);
+							revalidateMenuPanel();
+						}
+					});
+
+					prodInfoPanel.add(nameLabel);
+					prodInfoPanel.add(descriptionLabel);
+					prodInfoPanel.add(catagoryLabel);
+					prodInfoPanel.add(idLabel);
+					prodInfoPanel.add(sellerIDLabel);
+					prodInfoPanel.add(quantityLabel);
+					prodInfoPanel.add(priceLabel);
+					prodInfoPanel.add(addToCartButton);
+					productInfoPanel.add(prodInfoPanel);
+					menuPanel.revalidate();
+					// }
 				}
 			}
 		});
@@ -374,8 +479,9 @@ public class GUI extends JFrame implements WindowListener {
 
 		JPanel cartPanels = new JPanel();
 		cartPanels.setMaximumSize(new Dimension(150, 250));
+
 		cartPanels.setLayout(new BoxLayout(cartPanels, BoxLayout.PAGE_AXIS));
-		
+
 		JScrollPane cartScroller = new JScrollPane(cartPanels);
 		cartScroller.setPreferredSize(new Dimension(150, 250));
 		for (String label : store.getCurrentAccount().getCartLabels()) {
@@ -386,7 +492,7 @@ public class GUI extends JFrame implements WindowListener {
 			itemPanel.setMaximumSize(new Dimension(300, itemPanel.getPreferredSize().height));
 			cartPanels.add(itemPanel);
 		}
-		
+
 		JButton checkoutButton = new JButton("Checkout");
 		checkoutButton.setAlignmentX(CENTER_ALIGNMENT);
 		checkoutButton.addActionListener(new ActionListener() {
@@ -403,7 +509,7 @@ public class GUI extends JFrame implements WindowListener {
 		if (cartTotal > store.getCurrentAccount().getMoney()) {
 			checkoutButton.setEnabled(false);
 		}
-		
+
 		JPanel infoPanel = new JPanel();
 		infoPanel.add(totalLabel);
 		infoPanel.add(checkoutButton);
