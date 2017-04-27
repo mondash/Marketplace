@@ -1,3 +1,14 @@
+//////////////////////////////////////////////////////////////////////////////////
+//
+// C212 Spring 17
+// Final Project Part 2
+//
+// Due:       4/28/17 11:59 PM
+//              
+// Group Members: Matt Ondash, Nate Pellant, Joshua Isaacson
+//
+//////////////////////////////////////////////////////////////////////////////////
+
 package main;
 
 import java.awt.Point;
@@ -15,6 +26,7 @@ public class Account {
 	private char[] password;
 	private String type;
 	private double money;
+	
 	// Point is used as such (Product ID, Quantity) to lower coupling
 	private ArrayList<Point> cart;
 
@@ -92,16 +104,28 @@ public class Account {
 		this.money += value;
 	}
 
+	/**
+	 * 
+	 * @param value
+	 */
 	public void payMoney(double value) {
 		this.money -= value;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Point[] getCart() {
 		Point[] cartArray = new Point[this.cart.size()];
 		cartArray = this.cart.toArray(cartArray);
 		return cartArray;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public String[] getCartLabels() {
 		String[] cartArray = new String[this.cart.size()];
 		for (int i = 0; i < cartArray.length; i++) {
@@ -110,6 +134,10 @@ public class Account {
 		return cartArray;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public String[] getCartIDs() {
 		String[] IDs = new String[this.cart.size()];
 		for (int i = 0; i < IDs.length; i++) {
@@ -118,6 +146,10 @@ public class Account {
 		return IDs;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public String[] getCartQuantities() {
 		String[] quantities = new String[this.cart.size()];
 		for (int i = 0; i < quantities.length; i++) {
@@ -126,10 +158,19 @@ public class Account {
 		return quantities;
 	}
 
+	/**
+	 * 
+	 * @param id
+	 * @param quantity
+	 */
 	public void addToCart(int id, int quantity) {
 		this.cart.add(new Point(id, quantity));
 	}
 
+	/**
+	 * 
+	 * @param id
+	 */
 	public void removeFromCart(int id) {
 		for (int i = 0; i < this.cart.size(); i++) {
 			if (this.cart.get(i).getX() == id) {
@@ -138,10 +179,18 @@ public class Account {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void checkOut() {
 
 	}
 
+	/**
+	 * 
+	 * @param letters
+	 * @return
+	 */
 	public boolean isPassword(char[] letters) {
 		if (this.password.length == letters.length) {
 			for (int i = 0; i < this.password.length; i++) {
@@ -154,6 +203,11 @@ public class Account {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public static Account readFromFile(File file) {
 
 		try {
@@ -182,6 +236,10 @@ public class Account {
 		}
 	}
 
+	/**
+	 * 
+	 * @param dir
+	 */
 	public void writeToFile(String dir) {
 		try {
 			File file = new File(dir + this.name + "_" + this.id + ".txt");
@@ -206,5 +264,4 @@ public class Account {
 			e.printStackTrace();
 		}
 	}
-
 }

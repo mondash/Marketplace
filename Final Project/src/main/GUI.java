@@ -1,4 +1,16 @@
+//////////////////////////////////////////////////////////////////////////////////
+//
+// C212 Spring 17
+// Final Project Part 2
+//
+// Due:       4/28/17 11:59 PM
+//              
+// Group Members: Matt Ondash, Nate Pellant, Joshua Isaacson
+//
+//////////////////////////////////////////////////////////////////////////////////
+
 package main;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
