@@ -31,8 +31,8 @@ public class Product {
 		this.quantity -= amount;
 	}
 	
-	public void restock(int amount) {
-		this.quantity += amount;
+	public void setQuantity(int amount) {
+		this.quantity = amount;
 	}
 	
 	public int getItemID() {
@@ -108,7 +108,7 @@ public class Product {
 	public void writeToFile(String dir) {
 
 		try {
-			File file = new File(dir + this.name + "_" + this.itemNumber + ".txt");
+			File file = new File(dir + "Product_" + this.itemNumber + ".txt");
 			PrintWriter out = new PrintWriter(file);
 
 			out.println(this.itemNumber);

@@ -460,19 +460,21 @@ public class GUI extends JFrame implements WindowListener {
 
 		JLabel descriptionLabel = new JLabel("Description");
 		JTextArea descriptionArea = new JTextArea();
+		descriptionArea.setLineWrap(true);
+		descriptionArea.setWrapStyleWord(true);
 		JScrollPane textScroller = new JScrollPane(descriptionArea);
-		textScroller.setPreferredSize(new Dimension(200, 40));
+		textScroller.setPreferredSize(new Dimension(200, 80));
 
 		descriptionPanel.add(descriptionLabel);
 		descriptionPanel.add(textScroller);
 
-		JPanel catagoryPanel = new JPanel();
+		JPanel categoryPanel = new JPanel();
 
-		JLabel catagoryLabel = new JLabel("Catagory");
-		JTextField catagoryField = new JTextField(20);
+		JLabel categoryLabel = new JLabel("Catagory");
+		JTextField categoryField = new JTextField(20);
 
-		catagoryPanel.add(catagoryLabel);
-		catagoryPanel.add(catagoryField);
+		categoryPanel.add(categoryLabel);
+		categoryPanel.add(categoryField);
 
 		JPanel pricePanel = new JPanel();
 
@@ -500,13 +502,13 @@ public class GUI extends JFrame implements WindowListener {
 					if (name != null && !name.equals("")) {
 						String description = descriptionArea.getText();
 						if (description != null && !description.equals("")) {
-							String catagory = catagoryField.getText();
-							if (catagory != null && !catagory.equals("")) {
+							String category = categoryField.getText();
+							if (category != null && !category.equals("")) {
 								double price = (double) priceSpinner.getValue();
 								if (price > 0.0) {
 									int quantity = (int) quantitySpinner.getValue();
 
-									store.addProduct(store.getCurrentAccount().getID(), name, description, catagory,
+									store.addProduct(store.getCurrentAccount().getID(), name, description, category,
 											price, quantity);
 									addProductFrame.dispose();
 									revalidateMenuPanel();
@@ -514,7 +516,7 @@ public class GUI extends JFrame implements WindowListener {
 									infoLabel.setText("Price cannot be 0");
 								}
 							} else {
-								infoLabel.setText("Invalid catagory");
+								infoLabel.setText("Invalid category");
 							}
 						} else {
 							infoLabel.setText("Invalid description");
@@ -538,7 +540,7 @@ public class GUI extends JFrame implements WindowListener {
 		addProductPanel.add(infoLabel);
 		addProductPanel.add(namePanel);
 		addProductPanel.add(descriptionPanel);
-		addProductPanel.add(catagoryPanel);
+		addProductPanel.add(categoryPanel);
 		addProductPanel.add(pricePanel);
 		addProductPanel.add(quantityPanel);
 		addProductPanel.add(buttonPanel);
@@ -549,6 +551,137 @@ public class GUI extends JFrame implements WindowListener {
 		addProductFrame.setLocationRelativeTo(this);
 		addProductFrame.setVisible(true);
 
+	}
+	
+	private void initEditProductFrame() {
+		
+		String[] productNames = store.getInventory().getProductNames(store.getCurrentAccount().getID());
+		String productName = (String) JOptionPane.showInputDialog(menuPanel, "Select product to edit", "Edit Product", JOptionPane.PLAIN_MESSAGE, null, productNames, productNames[0]);
+		
+		if (productName != null && !productName.equals("")) {
+			
+			JFrame editProductFrame = new JFrame();
+			
+			JPanel editProductPanel = new JPanel();
+			editProductPanel.setLayout(new BoxLayout(editProductPanel, BoxLayout.PAGE_AXIS));
+			
+			Product p = store.getInventory().get(productName);
+			
+			JLabel infoLabel = new JLabel("Edit Product Fields");
+			
+			JPanel namePanel = new JPanel();
+			
+			JLabel nameLabel = new JLabel("Name");
+			JTextField nameField = new JTextField(20);
+			nameField.setText(p.getName());
+			
+			namePanel.add(nameLabel);
+			namePanel.add(nameField);
+			
+			JPanel descriptionPanel = new JPanel();
+
+			JLabel descriptionLabel = new JLabel("Description");
+			JTextArea descriptionArea = new JTextArea();
+			descriptionArea.setLineWrap(true);
+			descriptionArea.setWrapStyleWord(true);
+			descriptionArea.setText(p.getDescription());
+			JScrollPane textScroller = new JScrollPane(descriptionArea);
+			textScroller.setPreferredSize(new Dimension(200, 80));
+
+			descriptionPanel.add(descriptionLabel);
+			descriptionPanel.add(textScroller);
+
+			JPanel categoryPanel = new JPanel();
+
+			JLabel categoryLabel = new JLabel("Catagory");
+			JTextField categoryField = new JTextField(20);
+			categoryField.setText(p.getCategory());
+
+			categoryPanel.add(categoryLabel);
+			categoryPanel.add(categoryField);
+
+			JPanel pricePanel = new JPanel();
+
+			JLabel priceLabel = new JLabel("Price");
+			JSpinner priceSpinner = new JSpinner(new SpinnerNumberModel(p.getPrice(), 0.0, 10000.0, 1.0));
+
+			pricePanel.add(priceLabel);
+			pricePanel.add(priceSpinner);
+
+			JPanel quantityPanel = new JPanel();
+
+			JLabel quantityLabel = new JLabel("Quantity");
+			JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(p.getQuantity(), 0, 10000, 1));
+
+			quantityPanel.add(quantityLabel);
+			quantityPanel.add(quantitySpinner);
+
+			JPanel buttonPanel = new JPanel();
+			
+			ActionListener listener = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (e.getActionCommand().equals("Add")) {
+						String name = nameField.getText();
+						if (name != null && !name.equals("")) {
+							String description = descriptionArea.getText();
+							if (description != null && !description.equals("")) {
+								String category = categoryField.getText();
+								if (category != null && !category.equals("")) {
+									double price = (double) priceSpinner.getValue();
+									if (price > 0.0) {
+										int quantity = (int) quantitySpinner.getValue();
+
+										Product prod = store.getInventory().get(p.getItemID());
+										
+										prod.setName(name);
+										prod.setDescription(description);
+										prod.setCategory(category);
+										prod.setPrice(price);
+										prod.setQuantity(quantity);
+										
+										editProductFrame.dispose();
+										revalidateMenuPanel();
+									} else {
+										infoLabel.setText("Price cannot be 0");
+									}
+								} else {
+									infoLabel.setText("Invalid category");
+								}
+							} else {
+								infoLabel.setText("Invalid description");
+							}
+						} else {
+							infoLabel.setText("Invalid name");
+						}
+					} else if (e.getActionCommand().equals("Cancel")) {
+						editProductFrame.dispose();
+					}
+				}
+			};
+
+			JButton addButton = new JButton("Add");
+			addButton.addActionListener(listener);
+			JButton cancelButton = new JButton("Cancel");
+			cancelButton.addActionListener(listener);
+			
+			buttonPanel.add(addButton);
+			buttonPanel.add(cancelButton);
+			editProductPanel.add(infoLabel);
+			editProductPanel.add(namePanel);
+			editProductPanel.add(descriptionPanel);
+			editProductPanel.add(categoryPanel);
+			editProductPanel.add(pricePanel);
+			editProductPanel.add(quantityPanel);
+			editProductPanel.add(buttonPanel);
+
+			editProductFrame.add(editProductPanel);
+			editProductFrame.setResizable(true);
+			editProductFrame.pack();
+			editProductFrame.setLocationRelativeTo(this);
+			editProductFrame.setVisible(true);
+			
+		}
 	}
 
 	private JMenuBar initMenuBar() {
@@ -579,6 +712,8 @@ public class GUI extends JFrame implements WindowListener {
 					initRemoveFundsFrame();
 				} else if (e.getActionCommand().equals("Add Product")) {
 					initAddProductFrame();
+				} else if (e.getActionCommand().equals("Edit Product")) {
+					initEditProductFrame();
 				}
 			}
 		};
