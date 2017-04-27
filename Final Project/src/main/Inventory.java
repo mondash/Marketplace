@@ -35,6 +35,21 @@ public class Inventory {
 	public void add(Product product) {
 		this.products.add(product);
 	}
+	
+	public Product[] getProductsOwnedBy(int sellerID) {
+		ArrayList<Product> products = new ArrayList<Product>();
+		
+		for (Product p : this.products) {
+			if (p.getSellerID() == sellerID) {
+				products.add(p);
+			}
+		}
+		
+		Product[] productArray = new Product[products.size()];
+		productArray = products.toArray(productArray);
+		
+		return productArray;
+	}
 
 	public String[] getProductNames() {
 		String[] names = new String[this.products.size()];
@@ -56,6 +71,18 @@ public class Inventory {
 				}
 			}
 			if (hasCat) {
+				names.add(p.getName());
+			}
+		}
+		String[] nameArray = new String[names.size()];
+		return names.toArray(nameArray);
+	}
+	
+	public String[] getProductNames(int sellerID) {
+		ArrayList<String> names = new ArrayList<String>();
+
+		for (Product p : this.products) {
+			if (p.getSellerID() == sellerID) {
 				names.add(p.getName());
 			}
 		}

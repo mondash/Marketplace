@@ -46,6 +46,10 @@ public class Account {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public void setPassword(String password) {
+		this.password = password.toCharArray();
+	}
 
 	public String getType() {
 		return this.type;
@@ -59,7 +63,7 @@ public class Account {
 		this.money += value;
 	}
 
-	public void payMoney(double value) {
+	public void removeMoney(double value) {
 		this.money -= value;
 	}
 
