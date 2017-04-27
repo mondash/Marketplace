@@ -18,6 +18,13 @@ public class Account {
 	// Point is used as such (Product ID, Quantity) to lower coupling
 	private ArrayList<Point> cart;
 
+	/**
+	 * Account Constructor - initializes Account with new cart
+	 * @param id - ID of Account
+	 * @param name - String name of Account
+	 * @param password - password of Account
+	 * @param type - type of Account: Seller, Admin, Buyer
+	 */
 	public Account(int id, String name, char[] password, String type) {
 		this.id = id;
 		this.name = name;
@@ -27,6 +34,15 @@ public class Account {
 		this.cart = new ArrayList<Point>();
 	}
 
+	/**
+	 * Account Constructor - initializes Account with pre-made cart
+	  @param id - ID of Account
+	 * @param name - String name of Account
+	 * @param password - password of Account
+	 * @param type - type of Account: Seller, Admin, Buyer
+	 * @param money - amount of funds to initialize Account with 
+	 * @param cart - premade cart to initialize Account with 
+	 */
 	public Account(int id, String name, char[] password, String type, double money, ArrayList<Point> cart) {
 		this.id = id;
 		this.name = name;
@@ -36,22 +52,42 @@ public class Account {
 		this.cart = cart;
 	}
 
+	/**
+	 * getter method for Account
+	 * @return ID of Account
+	 */
 	public int getID() {
 		return this.id;
 	}
 
+	/**
+	 * getter method for Account
+	 * @return name of Account
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * getter method for Account
+	 * @return Type of Account
+	 */
 	public String getType() {
 		return this.type;
 	}
 
+	/**
+	 * getter method for Account
+	 * @return funds of Account
+	 */
 	public double getMoney() {
 		return this.money;
 	}
 
+	/**
+	 * setter method for Account
+	 * @return ID of account
+	 */
 	public void addMoney(double value) {
 		this.money += value;
 	}
