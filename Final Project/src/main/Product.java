@@ -24,16 +24,6 @@ public class Product {
 		this.price = price;
 		this.quantity = quantity;
 	}
-
-	public void purchase(int amount) {
-		if (amount > this.quantity)
-			amount = quantity;
-		this.quantity -= amount;
-	}
-	
-	public void setQuantity(int amount) {
-		this.quantity = amount;
-	}
 	
 	public int getItemID() {
 		return this.itemNumber;
@@ -49,6 +39,10 @@ public class Product {
 	
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getIdentifier() {
+		return this.name + ": " + this.itemNumber;
 	}
 	
 	public String getDescription() {
@@ -77,6 +71,16 @@ public class Product {
 	
 	public int getQuantity() {
 		return this.quantity;
+	}
+
+	public void purchase(int amount) {
+		if (amount > this.quantity)
+			amount = quantity;
+		this.quantity -= amount;
+	}
+	
+	public void setQuantity(int amount) {
+		this.quantity = amount;
 	}
 	
 	public static Product readFromFile(File file) {
@@ -132,5 +136,4 @@ public class Product {
 			e.printStackTrace();
 		}
 	}
-
 }

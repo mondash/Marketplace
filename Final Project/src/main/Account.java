@@ -5,13 +5,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Account {
 
 	private int id;
 	private String name;
-	private char[] password;
+	private int passwordHash;
 	private String type;
 	private double money;
 	// Point is used as such (Product ID, Quantity) to lower coupling
@@ -20,16 +21,16 @@ public class Account {
 	public Account(int id, String name, char[] password, String type) {
 		this.id = id;
 		this.name = name;
-		this.password = password;
+		this.passwordHash = Arrays.hashCode(password);
 		this.type = type;
 		this.money = 0.0;
 		this.cart = new ArrayList<Point>();
 	}
 
-	public Account(int id, String name, char[] password, String type, double money, ArrayList<Point> cart) {
+	public Account(int id, String name, int passwordHash, String type, double money, ArrayList<Point> cart) {
 		this.id = id;
 		this.name = name;
-		this.password = password;
+		this.passwordHash = passwordHash;
 		this.type = type;
 		this.money = money;
 		this.cart = cart;
@@ -47,8 +48,8 @@ public class Account {
 		this.name = name;
 	}
 	
-	public void setPassword(String password) {
-		this.password = password.toCharArray();
+	public void setPassword(String password) {;
+		this.passwordHash = Arrays.hashCode(password.toCharArray());
 	}
 
 	public String getType() {
@@ -79,22 +80,6 @@ public class Account {
 			cartArray[i] = this.cart.get(i).x + " " + this.cart.get(i).y;
 		}
 		return cartArray;
-	}
-	
-	public String[] getCartIDs() {
-		String[] IDs = new String[this.cart.size()];
-		for (int i = 0; i < IDs.length; i++) {
-			IDs[i] = "" + this.cart.get(i).x;
-		}
-		return IDs;
-	}
-	
-	public String[] getCartQuantities() {
-		String[] quantities = new String[this.cart.size()];
-		for (int i = 0; i < quantities.length; i++) {
-			quantities[i] = "" + this.cart.get(i).y;
-		}
-		return quantities;
 	}
 
 	public void addToCart(int id, int quantity) {
@@ -129,15 +114,7 @@ public class Account {
 	}
 
 	public boolean isPassword(char[] letters) {
-		if (this.password.length == letters.length) {
-			for (int i = 0; i < this.password.length; i++) {
-				if (this.password[i] != letters[i]) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
+		return this.passwordHash == Arrays.hashCode(letters);
 	}
 
 	public static Account readFromFile(File file) {
@@ -147,7 +124,8 @@ public class Account {
 
 			int id = Integer.parseInt(in.nextLine());
 			String name = in.nextLine();
-			char[] password = in.nextLine().toCharArray();
+			//char[] password = in.nextLine().toCharArray();
+			int passwordHash = Integer.parseInt(in.nextLine());
 			String type = in.nextLine();
 			Double money = Double.parseDouble(in.nextLine());
 			String[] cartItems = in.nextLine().split("\\+"); 
@@ -161,7 +139,7 @@ public class Account {
 			}
 
 			in.close();
-			return new Account(id, name, password, type, money, cart);
+			return new Account(id, name, passwordHash, type, money, cart);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
@@ -176,7 +154,8 @@ public class Account {
 
 			out.println(this.id);
 			out.println(this.name);
-			out.println(String.copyValueOf(this.password));
+			//out.println(String.copyValueOf(this.password));
+			out.println(this.passwordHash);
 			out.println(this.type);
 			out.println(this.money);
 

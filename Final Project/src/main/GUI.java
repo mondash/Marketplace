@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -29,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -63,7 +61,7 @@ public class GUI extends JFrame implements WindowListener {
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		setSize(WIDTH, HEIGHT);
 		setLayout(new BorderLayout());
-		setTitle("Marketplace");
+		setTitle("Generic Marketplace");
 		setIconImage(icon.getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		add(loginPanel, BorderLayout.CENTER);
@@ -81,7 +79,7 @@ public class GUI extends JFrame implements WindowListener {
 		JLabel titleLabel = new JLabel("Marketplace");
 		titleLabel.setAlignmentX(CENTER_ALIGNMENT);
 		titleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 50));
-		
+
 		JLabel logoLabel = new JLabel(logo);
 
 		JPanel enclosingPanel = new JPanel();
@@ -137,12 +135,7 @@ public class GUI extends JFrame implements WindowListener {
 		enclosingPanel.add(usernamePanel);
 		enclosingPanel.add(passwordPanel);
 		enclosingPanel.add(buttonPanel);
-
-		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("LoginStuff");
-		menu.add(new JMenuItem("Function 1"));
-		menuBar.add(menu);
-		this.setJMenuBar(menuBar);
+		
 		loginPanel.add(enclosingPanel, BorderLayout.CENTER);
 		loginPanel.add(logoLabel, BorderLayout.PAGE_END);
 	}
@@ -238,7 +231,7 @@ public class GUI extends JFrame implements WindowListener {
 		JPanel productPanel = initProductPanel();
 
 		JPanel cartPanel = initCartPanel();
-		
+
 		JMenuBar menuBar = initMenuBar();
 
 		this.setJMenuBar(menuBar);
@@ -257,7 +250,7 @@ public class GUI extends JFrame implements WindowListener {
 		menuPanel.add(cartPanel);
 		menuPanel.revalidate();
 	}
-	
+
 	private JMenuBar initMenuBar() {
 
 		JMenuBar menuBar = new JMenuBar();
@@ -369,7 +362,7 @@ public class GUI extends JFrame implements WindowListener {
 
 		JPanel categoryPanel = new JPanel();
 		categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.PAGE_AXIS));
-		
+
 		JScrollPane categoryScroller = new JScrollPane(categoryPanel);
 		categoryScroller.setBorder(BorderFactory.createTitledBorder("Categories"));
 
@@ -391,33 +384,33 @@ public class GUI extends JFrame implements WindowListener {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					System.out.println("Item change");
-					ArrayList<String> categories = new ArrayList<String>();
+					ArrayList<String> activeCats = new ArrayList<String>();
 					for (JCheckBox box : catBoxes) {
 						if (box.isSelected()) {
-							categories.add(box.getText());
+							activeCats.add(box.getText());
 						}
 					}
-					String[] catNames = new String[categories.size()];
-					catNames = categories.toArray(catNames);
+					String[] catNames = new String[activeCats.size()];
+					catNames = activeCats.toArray(catNames);
 					productsPanel.removeAll();
-					for (String prodName : store.getInventory().getProductNames(catNames)) {
-						JPanel productItemPanel = initProductItemPanel(prodName);
+					
+					for (int prodID: store.getInventory().getProductIDs(catNames)) {
+						JPanel productItemPanel = initProductItemPanel(prodID);
 						productItemPanel.setMaximumSize(productItemPanel.getPreferredSize());
 						productItemPanel.setAlignmentX(RIGHT_ALIGNMENT);
 						productsPanel.add(productItemPanel);
-						
 					}
 					productScroller.revalidate();
 				}
 			});
 		}
 
-		for (String prodName : store.getInventory().getProductNames(categories)) {
-			JPanel productItemPanel = initProductItemPanel(prodName);
+		for (int prodID : store.getInventory().getProductIDs(categories)) {
+			JPanel productItemPanel = initProductItemPanel(prodID);
 			productItemPanel.setMaximumSize(productItemPanel.getPreferredSize());
 			productItemPanel.setAlignmentX(RIGHT_ALIGNMENT);
 			productsPanel.add(productItemPanel, Component.RIGHT_ALIGNMENT);
-			
+
 		}
 		productScroller.revalidate();
 
@@ -426,20 +419,20 @@ public class GUI extends JFrame implements WindowListener {
 
 		return productPanel;
 	}
-	
-	private JPanel initProductItemPanel(String productName) {
+
+	private JPanel initProductItemPanel(int productID) {
 
 		JPanel productItemPanel = new JPanel();
 
-		Product p = store.getInventory().get(productName);
+		Product p = store.getInventory().get(productID);
 
-		JLabel nameLabel = new JLabel(p.getName());
+		JLabel identifierLabel = new JLabel(p.getIdentifier());
 
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("More Info")) {
-					initProductInfoFrame(productName);
+					initProductInfoFrame(productID);
 				} else if (e.getActionCommand().equals("Add to Cart")) {
 					store.addToCart(p.getItemID(), 1);
 					revalidateMenuPanel();
@@ -451,8 +444,11 @@ public class GUI extends JFrame implements WindowListener {
 		moreInfoButton.addActionListener(listener);
 		JButton addToCartButton = new JButton("Add to Cart");
 		addToCartButton.addActionListener(listener);
+		if (p.getQuantity() == 0) {
+			addToCartButton.setEnabled(false);
+		}
 
-		productItemPanel.add(nameLabel);
+		productItemPanel.add(identifierLabel);
 		productItemPanel.add(moreInfoButton);
 		productItemPanel.add(addToCartButton);
 
@@ -469,7 +465,7 @@ public class GUI extends JFrame implements WindowListener {
 		JScrollPane cartScroller = new JScrollPane(cartPanels);
 		cartScroller.setPreferredSize(new Dimension(250, 400));
 		cartScroller.setBorder(BorderFactory.createTitledBorder("Cart"));
-		
+
 		for (String label : store.getCurrentAccount().getCartLabels()) {
 			String[] labelParts = label.split(" ");
 			int productID = Integer.parseInt(labelParts[0]);
@@ -511,7 +507,9 @@ public class GUI extends JFrame implements WindowListener {
 
 		JPanel cartItemPanel = new JPanel();
 
-		JLabel cartItemLabel = new JLabel(store.getInventory().get(productID).getName());
+		Product p = store.getInventory().get(productID);
+		
+		JLabel cartItemLabel = new JLabel(p.getIdentifier());
 		JButton removeButton = new JButton("Remove");
 		removeButton.addActionListener(new ActionListener() {
 			@Override
@@ -523,7 +521,7 @@ public class GUI extends JFrame implements WindowListener {
 		});
 
 		JSpinner quantitySpinner = new JSpinner(
-				new SpinnerNumberModel(quantity, 1, store.getInventory().get(productID).getQuantity(), 1));
+				new SpinnerNumberModel(quantity, 1, p.getQuantity(), 1));
 		quantitySpinner.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -539,7 +537,7 @@ public class GUI extends JFrame implements WindowListener {
 
 		return cartItemPanel;
 	}
-	
+
 	private void initChangeNameFrame() {
 
 		JFrame changeNameFrame = new JFrame();
@@ -788,7 +786,7 @@ public class GUI extends JFrame implements WindowListener {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Add")) {
 					String name = nameField.getText();
-					if (name != null && !name.equals("") && (store.getInventory().get(name) == null)) {
+					if (name != null && !name.equals("")) {
 						String description = descriptionArea.getText();
 						if (description != null && !description.equals("")) {
 							String category = categoryField.getText();
@@ -844,27 +842,27 @@ public class GUI extends JFrame implements WindowListener {
 
 	private void initEditProductFrame(String type) {
 
-		String[] productNames;
-		String productName = "";
+		String[] productIdentifiers;
+		String productIdentifier = "";
 
 		if (type.equals("Seller")) {
-			productNames = store.getInventory().getProductNames(store.getCurrentAccount().getID());
-			productName = (String) JOptionPane.showInputDialog(menuPanel, "Select product to edit", "Edit Product",
-					JOptionPane.PLAIN_MESSAGE, null, productNames, productNames[0]);
+			productIdentifiers = store.getInventory().getProductIdentifiers(store.getCurrentAccount().getID());
+			productIdentifier = (String) JOptionPane.showInputDialog(menuPanel, "Select product to edit", "Edit Product",
+					JOptionPane.PLAIN_MESSAGE, null, productIdentifiers, productIdentifiers[0]);
 		} else if (type.equals("Admin")) {
-			productNames = store.getInventory().getProductNames();
-			productName = (String) JOptionPane.showInputDialog(menuPanel, "Select product to edit", "Edit Product",
-					JOptionPane.PLAIN_MESSAGE, null, productNames, productNames[0]);
+			productIdentifiers = store.getInventory().getProductIdentifiers();
+			productIdentifier = (String) JOptionPane.showInputDialog(menuPanel, "Select product to edit", "Edit Product",
+					JOptionPane.PLAIN_MESSAGE, null, productIdentifiers, productIdentifiers[0]);
 		}
 
-		if (productName != null && !productName.equals("")) {
+		if (productIdentifier != null && !productIdentifier.equals("")) {
 
 			JFrame editProductFrame = new JFrame();
 
 			JPanel editProductPanel = new JPanel();
 			editProductPanel.setLayout(new BoxLayout(editProductPanel, BoxLayout.PAGE_AXIS));
 
-			Product p = store.getInventory().get(productName);
+			Product p = store.getInventory().get(Integer.parseInt(productIdentifier.split(" ")[1]));
 
 			JLabel infoLabel = new JLabel("Edit Product Fields");
 
@@ -1093,15 +1091,16 @@ public class GUI extends JFrame implements WindowListener {
 		editRevenuePercentageFrame.setVisible(true);
 	}
 
-
-	private void initProductInfoFrame(String productName) {
+	private void initProductInfoFrame(int productID) {
 
 		JFrame productInfoFrame = new JFrame();
-
+		productInfoFrame.setTitle("Product Info");
+		
 		JPanel productInfoPanel = new JPanel();
 		productInfoPanel.setLayout(new BoxLayout(productInfoPanel, BoxLayout.PAGE_AXIS));
+		productInfoPanel.setBorder(BorderFactory.createTitledBorder("Product"));
 
-		Product p = store.getInventory().get(productName);
+		Product p = store.getInventory().get(productID);
 
 		JLabel nameLabel = new JLabel("Name: " + p.getName());
 
@@ -1110,21 +1109,38 @@ public class GUI extends JFrame implements WindowListener {
 		descriptionArea.setLineWrap(true);
 		descriptionArea.setWrapStyleWord(true);
 		descriptionArea.setText(p.getDescription());
+		descriptionArea.setFont(UIManager.getFont("Label.font"));
+		descriptionArea.setEditable(false);
 		JScrollPane descriptionScroller = new JScrollPane(descriptionArea);
-		descriptionScroller.setPreferredSize(new Dimension(200, 80));
+		descriptionScroller.setPreferredSize(new Dimension(250, 100));
 
+		JPanel descriptionPanel = new JPanel();
+		descriptionPanel.add(descriptionLabel);
+		descriptionPanel.add(descriptionScroller);
+		
 		JLabel categoryLabel = new JLabel("Category: " + p.getCategory());
 
-		JLabel priceLabel = new JLabel("Price: " + p.getPrice());
+		JLabel priceLabel = new JLabel("Price: $" + p.getPrice());
 
 		JLabel quantityLabel = new JLabel("Quantity: " + p.getQuantity());
+		
+		ActionListener listener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				productInfoFrame.dispose();
+			}
+		};
+		
+		JButton acceptButton = new JButton("OK");
+		acceptButton.addActionListener(listener);
 
 		productInfoPanel.add(nameLabel);
 		productInfoPanel.add(descriptionLabel);
-		productInfoPanel.add(descriptionScroller);
+		productInfoPanel.add(descriptionPanel);
 		productInfoPanel.add(categoryLabel);
 		productInfoPanel.add(priceLabel);
 		productInfoPanel.add(quantityLabel);
+		productInfoPanel.add(acceptButton);
 
 		productInfoFrame.add(productInfoPanel);
 		productInfoFrame.setResizable(false);
@@ -1144,7 +1160,7 @@ public class GUI extends JFrame implements WindowListener {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException ev) {
-			//ev.printStackTrace();
+			// ev.printStackTrace();
 		}
 	}
 
@@ -1169,7 +1185,7 @@ public class GUI extends JFrame implements WindowListener {
 	}
 
 	public static void main(String[] args) {
-		
+
 		new GUI();
 	}
 }
