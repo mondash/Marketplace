@@ -46,6 +46,14 @@ public class Marketplace {
 		ID++;
 		return ID;
 	}
+	
+	public static void setSellerRevenuePercentage(double percentage) {
+		SELLER_REVENUE_PERCENTAGE = percentage;
+	}
+	
+	public static double getSellerRevenuePercentage() {
+		return SELLER_REVENUE_PERCENTAGE;
+	}
 
 	public void addAccount(String name, char[] password, String type) {
 
