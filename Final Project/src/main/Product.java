@@ -14,13 +14,13 @@ public class Product {
 	private double price;
 	private int quantity;
 
-	public Product(int itemNumber, int sellerID, String name, String description, String catagory, double price,
+	public Product(int itemNumber, int sellerID, String name, String description, String category, double price,
 			int quantity) {
 		this.itemNumber = itemNumber;
 		this.sellerID = sellerID;
 		this.name = name;
 		this.description = description;
-		this.category = catagory;
+		this.category = category;
 		this.price = price;
 		this.quantity = quantity;
 	}

@@ -61,8 +61,8 @@ public class Marketplace {
 
 	}
 
-	public void addProduct(int sellerID, String name, String description, String catagory, double price, int quantity) {
-		inventory.add(new Product(assignID(), sellerID, name, description, catagory, price, quantity));
+	public void addProduct(int sellerID, String name, String description, String category, double price, int quantity) {
+		inventory.add(new Product(assignID(), sellerID, name, description, category, price, quantity));
 	}
 
 	public boolean tryLogin(String name, char[] password) {
