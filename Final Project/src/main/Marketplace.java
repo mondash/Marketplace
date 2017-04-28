@@ -59,8 +59,8 @@ public class Marketplace {
 		this.currentAccount = null;
 	}
 
-	public void addToCart(int id, int quantity) {
-		this.currentAccount.addToCart(id, quantity);
+	public void addToCart(int id) {
+		this.currentAccount.addToCart(id);
 	}
 
 	public void removeFromCart(int id) {

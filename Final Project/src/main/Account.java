@@ -82,14 +82,13 @@ public class Account {
 		return cartArray;
 	}
 
-	public void addToCart(int id, int quantity) {
+	public void addToCart(int id) {
 		for (Point item: this.cart) {
 			if (item.x == id) {
-				item.y++;
 				return;
 			}
 		}
-		this.cart.add(new Point(id, quantity));
+		this.cart.add(new Point(id, 1));
 	}
 	
 	public void updateCartWith(int id, int quantity) {
@@ -105,6 +104,7 @@ public class Account {
 		for (int i = 0; i < this.cart.size(); i++) {
 			if (this.cart.get(i).x == id) {
 				this.cart.remove(i);
+				return;
 			}
 		}
 	}

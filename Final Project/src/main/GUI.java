@@ -10,6 +10,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -18,6 +20,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -91,19 +94,19 @@ public class GUI extends JFrame implements WindowListener {
 		enclosingPanel.setBorder(BorderFactory.createTitledBorder("Login"));
 
 		JLabel infoLabel = new JLabel("Enter your Login Information");
-		infoLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
+		// infoLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 		JLabel usernameLabel = new JLabel("Username");
-		usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		// usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JLabel passwordLabel = new JLabel("Password");
-		passwordLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		// passwordLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JTextField usernameArea = new JTextField(20);
-		usernameArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		// usernameArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JPasswordField passwordArea = new JPasswordField(20);
-		passwordArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		// passwordArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JButton loginButton = new JButton("Login");
-		loginButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		// loginButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JButton registerButton = new JButton("Register");
-		registerButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+		// registerButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 
 		ActionListener listener = new ActionListener() {
 			@Override
@@ -260,9 +263,9 @@ public class GUI extends JFrame implements WindowListener {
 					add(loginPanel, BorderLayout.CENTER);
 					revalidate();
 				} else if (e.getActionCommand().equals("Edit Name")) {
-					initChangeNameFrame();
+					showChangeNameDialog();
 				} else if (e.getActionCommand().equals("Edit Password")) {
-					initChangePasswordFrame();
+					showChangePasswordDialog();
 				} else if (e.getActionCommand().equals("Display Funds")) {
 					JOptionPane.showMessageDialog(null, String.format("$%.2f", store.getCurrentAccount().getMoney()));
 				} else if (e.getActionCommand().equals("Add Funds")) {
@@ -443,7 +446,7 @@ public class GUI extends JFrame implements WindowListener {
 					if (e.getActionCommand().equals("More Info")) {
 						initProductInfoFrame(productID);
 					} else if (e.getActionCommand().equals("Add to Cart")) {
-						store.addToCart(p.getItemID(), 1);
+						store.addToCart(p.getItemID());
 						inventoryPanel.updateData();
 						cartPanel.updateData();
 					}
@@ -474,7 +477,7 @@ public class GUI extends JFrame implements WindowListener {
 			for (int prodID : productIDs) {
 				addProductPanel(prodID);
 			}
-			
+
 			productsPanel.revalidate();
 			productsPanel.repaint();
 		}
@@ -589,17 +592,14 @@ public class GUI extends JFrame implements WindowListener {
 		}
 	}
 
-	private void initChangeNameFrame() {
+	private void showChangeNameDialog() {
 
-		JFrame changeNameFrame = new JFrame();
-
-		JPanel changeNamePanel = new JPanel();
-		changeNamePanel.setLayout(new BoxLayout(changeNamePanel, BoxLayout.PAGE_AXIS));
-
-		JLabel infoLabel = new JLabel("Enter new name");
-
+		JDialog dialog = new JDialog(this, "Edit Name", true);
+		
+		JLabel infoLabel = new JLabel(" ");
+		JLabel nameLabel = new JLabel("Enter new name");
 		JTextField nameField = new JTextField(20);
-
+		
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -609,12 +609,12 @@ public class GUI extends JFrame implements WindowListener {
 						infoLabel.setText("Invalid name / Name already taken");
 					} else {
 						store.getCurrentAccount().setName(name);
-						changeNameFrame.dispose();
+						dialog.dispose();
 						menuPanel.revalidate();
 						menuPanel.repaint();
 					}
 				} else if (e.getActionCommand().equals("Cancel")) {
-					changeNameFrame.dispose();
+					dialog.dispose();
 				}
 			}
 		};
@@ -625,31 +625,32 @@ public class GUI extends JFrame implements WindowListener {
 		cancelButton.addActionListener(listener);
 
 		JPanel buttonPanel = new JPanel();
-
 		buttonPanel.add(acceptButton);
 		buttonPanel.add(cancelButton);
 
-		changeNamePanel.add(infoLabel);
-		changeNamePanel.add(nameField);
-		changeNamePanel.add(buttonPanel);
-
-		changeNameFrame.add(changeNamePanel);
-
-		changeNameFrame.setResizable(false);
-		changeNameFrame.pack();
-		changeNameFrame.setLocationRelativeTo(this);
-		changeNameFrame.setVisible(true);
+		JPanel namePanel = new JPanel();
+		namePanel.add(nameLabel);
+		namePanel.add(nameField);
+		
+		JPanel enclosingPanel =  new JPanel();
+		enclosingPanel.setLayout(new BoxLayout(enclosingPanel, BoxLayout.PAGE_AXIS));
+		enclosingPanel.add(infoLabel);
+		enclosingPanel.add(namePanel);
+		enclosingPanel.add(buttonPanel);
+		enclosingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+		dialog.add(enclosingPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
-	private void initChangePasswordFrame() {
+	private void showChangePasswordDialog() {
 
-		JFrame changePasswordFrame = new JFrame();
+		JDialog dialog = new JDialog(this, "Edit Password", true);
 
-		JPanel changePasswordPanel = new JPanel();
-		changePasswordPanel.setLayout(new BoxLayout(changePasswordPanel, BoxLayout.PAGE_AXIS));
-
-		JLabel infoLabel = new JLabel("Enter new password");
-
+		JLabel infoLabel = new JLabel(" ");
+		JLabel passordLabel = new JLabel("Enter new password");
 		JTextField passwordField = new JTextField(20);
 
 		ActionListener listener = new ActionListener() {
@@ -661,10 +662,10 @@ public class GUI extends JFrame implements WindowListener {
 						infoLabel.setText("Invalid password!");
 					} else {
 						store.getCurrentAccount().setPassword(password);
-						changePasswordFrame.dispose();
+						dialog.dispose();
 					}
 				} else if (e.getActionCommand().equals("Cancel")) {
-					changePasswordFrame.dispose();
+					dialog.dispose();
 				}
 			}
 		};
@@ -675,20 +676,25 @@ public class GUI extends JFrame implements WindowListener {
 		cancelButton.addActionListener(listener);
 
 		JPanel buttonPanel = new JPanel();
-
 		buttonPanel.add(acceptButton);
 		buttonPanel.add(cancelButton);
 
-		changePasswordPanel.add(infoLabel);
-		changePasswordPanel.add(passwordField);
-		changePasswordPanel.add(buttonPanel);
+		JPanel passwordPanel = new JPanel();
+		passwordPanel.add(passordLabel);
+		passwordPanel.add(passwordField);
+		
+		JPanel enclosingPanel = new JPanel();
+		enclosingPanel.setLayout(new BoxLayout(enclosingPanel, BoxLayout.PAGE_AXIS));
+		enclosingPanel.add(infoLabel);
+		enclosingPanel.add(passwordPanel);
+		enclosingPanel.add(buttonPanel);
+		enclosingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+		dialog.add(enclosingPanel);
 
-		changePasswordFrame.add(changePasswordPanel);
-
-		changePasswordFrame.setResizable(false);
-		changePasswordFrame.pack();
-		changePasswordFrame.setLocationRelativeTo(this);
-		changePasswordFrame.setVisible(true);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	private void initAddFundsFrame() {
@@ -1214,8 +1220,8 @@ public class GUI extends JFrame implements WindowListener {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException ev) {
-			// ev.printStackTrace();
+				| UnsupportedLookAndFeelException ex) {
+			// ex.printStackTrace();
 		}
 	}
 
