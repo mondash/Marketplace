@@ -105,16 +105,16 @@ public class Account {
 	}
 
 	/**
-	 * 
-	 * @param value
+	 * setter method for Account
+	 * @param value - money to be taken from Account
 	 */
 	public void payMoney(double value) {
 		this.money -= value;
 	}
 
 	/**
-	 * 
-	 * @return
+	 * getter method for Account
+	 * @return Array of every Point (each cart item), in other words, the entire cart
 	 */
 	public Point[] getCart() {
 		Point[] cartArray = new Point[this.cart.size()];
@@ -123,8 +123,8 @@ public class Account {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * getter method for Account
+	 * @return - the cart as an array of strings
 	 */
 	public String[] getCartLabels() {
 		String[] cartArray = new String[this.cart.size()];
@@ -135,8 +135,8 @@ public class Account {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * getter method for Account
+	 * @return - the IDs of the cart's items
 	 */
 	public String[] getCartIDs() {
 		String[] IDs = new String[this.cart.size()];
@@ -147,8 +147,8 @@ public class Account {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * getter method for Account
+	 * @return - the quantity of each item in the cart
 	 */
 	public String[] getCartQuantities() {
 		String[] quantities = new String[this.cart.size()];
@@ -159,17 +159,17 @@ public class Account {
 	}
 
 	/**
-	 * 
-	 * @param id
-	 * @param quantity
+	 * setter method for Account
+	 * @param id - ID of item to be added to cart
+	 * @param quantity - number of the item to be added to the cart
 	 */
 	public void addToCart(int id, int quantity) {
 		this.cart.add(new Point(id, quantity));
 	}
 
 	/**
-	 * 
-	 * @param id
+	 * setter method for Account
+	 * @param id - ID of item to be removed from cart
 	 */
 	public void removeFromCart(int id) {
 		for (int i = 0; i < this.cart.size(); i++) {
@@ -187,9 +187,8 @@ public class Account {
 	}
 
 	/**
-	 * 
-	 * @param letters
-	 * @return
+	 * @param letters - character array to be determined as a password or not
+	 * @return boolean indicating whether or not the 
 	 */
 	public boolean isPassword(char[] letters) {
 		if (this.password.length == letters.length) {
@@ -204,9 +203,9 @@ public class Account {
 	}
 
 	/**
-	 * 
-	 * @param file
-	 * @return
+	 * getter method for reading from a File for Account 
+	 * @param file - File to be read from
+	 * @return interpreted text from File as an Account
 	 */
 	public static Account readFromFile(File file) {
 
@@ -237,8 +236,8 @@ public class Account {
 	}
 
 	/**
-	 * 
-	 * @param dir
+	 * PrintWriter for Account
+	 * @param dir - name of File to be written to
 	 */
 	public void writeToFile(String dir) {
 		try {
