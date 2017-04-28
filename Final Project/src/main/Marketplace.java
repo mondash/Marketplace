@@ -80,7 +80,6 @@ public class Marketplace {
 	public void addAccount(String name, char[] password, String type) {
 
 		accounts.add(new Account(assignID(), name, password, type));
-
 	}
 
 	/**

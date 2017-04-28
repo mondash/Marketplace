@@ -128,6 +128,7 @@ public class Account {
 	 */
 	public String[] getCartLabels() {
 		String[] cartArray = new String[this.cart.size()];
+		
 		for (int i = 0; i < cartArray.length; i++) {
 			cartArray[i] = "ID: " + this.cart.get(i).x + " Quantity: " + this.cart.get(i).y;
 		}
@@ -140,6 +141,7 @@ public class Account {
 	 */
 	public String[] getCartIDs() {
 		String[] IDs = new String[this.cart.size()];
+		
 		for (int i = 0; i < IDs.length; i++) {
 			IDs[i] = "" + this.cart.get(i).x;
 		}
@@ -152,6 +154,7 @@ public class Account {
 	 */
 	public String[] getCartQuantities() {
 		String[] quantities = new String[this.cart.size()];
+		
 		for (int i = 0; i < quantities.length; i++) {
 			quantities[i] = "" + this.cart.get(i).y;
 		}
@@ -211,7 +214,6 @@ public class Account {
 
 		try {
 			Scanner in = new Scanner(file);
-
 			int id = Integer.parseInt(in.nextLine());
 			String name = in.nextLine();
 			char[] password = in.nextLine().toCharArray();
@@ -219,6 +221,7 @@ public class Account {
 			Double money = Double.parseDouble(in.nextLine());
 			String[] cartItems = in.nextLine().split("\\+"); 
 			ArrayList<Point> cart = new ArrayList<Point>();
+			
 			if (!cartItems[0].equals("")) {
 				for (String item : cartItems) {
 					int prodID = Integer.parseInt(item.substring(0, item.indexOf(",")));

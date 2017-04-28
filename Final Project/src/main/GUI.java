@@ -358,7 +358,7 @@ public class GUI extends JFrame implements WindowListener {
 		menuPanel.add(leftPanel);
 		menuPanel.add(rightPanel);
 	}
-
+ 
 	@Override
 	public void windowClosing(WindowEvent e) {
 		this.store.saveResources(constantsDir, inventoryDir, directoryDir);

@@ -127,9 +127,6 @@ public class Window extends JFrame {
 		infoEnclosingPanel.add(panel);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		
-		
-		
-		
 		JLabel lblNewLabel_2 = new JLabel("New label");
 		panel.add(lblNewLabel_2);
 		

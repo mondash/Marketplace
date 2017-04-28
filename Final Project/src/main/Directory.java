@@ -86,7 +86,6 @@ public class Directory {
 	 * @param dir - name of the Account to be called from the account
 	 */
 	public void loadAccounts(String dir) {
-		
 		File folder = new File(dir);
 		File[] files = folder.listFiles();
 		
