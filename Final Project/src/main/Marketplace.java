@@ -17,13 +17,23 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author MattOndash
+ * @author NatePellant
+ *
+ */
 public class Marketplace {
 
+	// instance variables
 	private Directory accounts;
 	private Inventory inventory;
 	private Account currentAccount;
 	private static int id = 0;
 
+	/**
+	 * Marketplace Constructor
+	 */
 	public Marketplace() {
 
 		accounts = new Directory();
@@ -52,21 +62,45 @@ public class Marketplace {
 		*/
 	}
 
+	/**
+	 * setter method for Marketplace
+	 * @return an incremented ID to assign to the next Product
+	 */
 	private int assignID() {
 		id++;
 		return id;
 	}
 
+	/**
+	 * adds an Account to the Marketplace
+	 * @param name - name of the Account to be added
+	 * @param password - password of the Account to be added
+	 * @param type - type of the Account to be added
+	 */
 	public void addAccount(String name, char[] password, String type) {
 
 		accounts.add(new Account(assignID(), name, password, type));
 
 	}
 
-	public void addProduct(int sellerID, String name, String description, String catagory, double price, int quantity) {
-		inventory.add(new Product(assignID(), sellerID, name, description, catagory, price, quantity));
+	/**
+	 * adds a Product to the Marketplace
+	 * @param sellerID - SellerID of the Product to be added
+	 * @param name - name of the Product to be added
+	 * @param description - description of the Product to be added
+	 * @param category - category of the Product to be added
+	 * @param price - price of the Product to be added
+	 * @param quantity - amount of the Product to be added
+	 */
+	public void addProduct(int sellerID, String name, String description, String category, double price, int quantity) {
+		inventory.add(new Product(assignID(), sellerID, name, description, category, price, quantity));
 	}
 
+	/**
+	 * @param name - name of the Account to try
+	 * @param password - password of the Account to try
+	 * @return checks if password matches that of the correct User, returns true if so and subsequently logs in, if not, it returns false
+	 */
 	public boolean tryLogin(String name, char[] password) {
 		Account account = accounts.get(name);
 
@@ -78,24 +112,43 @@ public class Marketplace {
 		return false;
 	}
 
+	/**
+	 * logs a User out from the Marketplace
+	 */
 	public void logout() {
 		this.currentAccount = null;
 	}
 
+	/**
+	 * adds an Item to the cart
+	 * @param id - ID of the Item to add to the cart
+	 * @param quantity - amount of Items to add to the cart
+	 */
 	public void addToCart(int id, int quantity) {
 		this.currentAccount.addToCart(id, quantity);
 	}
 
+	/**
+	 * removes an Item from the cart one at a time
+	 * @param id - ID of the Item to remove from the cart
+	 */
 	public void removeFromCart(int id) {
 		this.currentAccount.removeFromCart(id);
 	}
 
+	/**
+	 * checks out current User and pays the Sellers
+	 */
 	public void checkOut() {
 		conductTransaction(this.currentAccount.getCart());
 		updateInventory(this.currentAccount.getCart());
 		this.currentAccount.checkOut();
 	}
 
+	/**
+	 * pays the Sellers
+	 * @param cart - Point Array of Items in the cart
+	 */
 	public void conductTransaction(Point[] cart) {
 		for (Point p : cart) {
 			Product product = this.inventory.get(p.x);
@@ -104,22 +157,42 @@ public class Marketplace {
 		}
 	}
 
+	/**
+	 * 
+	 * @param cart
+	 */
 	public void updateInventory(Point[] cart) {
 
 	}
 	
+	/**
+	 * getter method for Marketplace
+	 * @return the Account that is current
+	 */
 	public Account getCurrentAccount() {
 		return this.currentAccount;
 	}
 
+	/**
+	 * getter method for Marketplace
+	 * @return the Directory of Accounts
+	 */
 	public Directory getDir() {
 		return this.accounts;
 	}
 
+	/**
+	 * getter method for Marketplace
+	 * @return the Inventory
+	 */
 	public Inventory getInventory() {
 		return this.inventory;
 	}
 
+	/**
+	 * loads constants from a text File
+	 * @param constantsDir - File to be read from
+	 */
 	private void loadConstants(String constantsDir) {
 		try {
 			File file = new File(constantsDir);
@@ -133,6 +206,10 @@ public class Marketplace {
 		}
 	}
 	
+	/**
+	 * saves constants to a text File
+	 * @param constantsDir - File to be written to
+	 */
 	private void saveConstants(String constantsDir) {
 		try {
 			File file = new File(constantsDir);
@@ -145,17 +222,28 @@ public class Marketplace {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * loads various values from text files
+	 * @param constantsDir - Directory of constants (product ID iteration and % of gains to the Seller)
+	 * @param inventoryDir - Inventory Directory
+	 * @param directoryDir - Directory Directory
+	 */
 	public void loadResources(String constantsDir, String inventoryDir, String directoryDir) {
 		loadConstants(constantsDir);
 		this.inventory.loadProducts(inventoryDir);
 		this.accounts.loadAccounts(directoryDir);
 	}
 
+	/**
+	 * saves various values to text files
+	 * @param constantsDir - Directory of constants (product ID iteration and % of gains to the Seller)
+	 * @param inventoryDir - Inventory Directory
+	 * @param directoryDir - Directory Directory
+	 */
 	public void saveResources(String constantsDir, String inventoryDir, String directoryDir) {
 		saveConstants(constantsDir);
 		this.inventory.saveProducts(inventoryDir);
 		this.accounts.saveAccounts(directoryDir);
 	}
-
 }
