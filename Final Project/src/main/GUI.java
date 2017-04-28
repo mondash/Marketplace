@@ -262,7 +262,7 @@ public class GUI extends JFrame implements WindowListener {
 						Product prod = store.getInventory().get(productName);
 						JLabel nameLabel = new JLabel(productName);
 						JLabel descriptionLabel = new JLabel(prod.getDescription());
-						JLabel catagoryLabel = new JLabel(prod.getCategory());
+						JLabel categoryLabel = new JLabel(prod.getCategory());
 						JLabel idLabel = new JLabel("" + prod.getItemID());
 						JLabel sellerIDLabel = new JLabel("" + prod.getSellerID());
 						JLabel quantityLabel = new JLabel("" + prod.getQuantity());
@@ -270,7 +270,7 @@ public class GUI extends JFrame implements WindowListener {
 
 						productInfoPanel.add(nameLabel);
 						productInfoPanel.add(descriptionLabel);
-						productInfoPanel.add(catagoryLabel);
+						productInfoPanel.add(categoryLabel);
 						productInfoPanel.add(idLabel);
 						productInfoPanel.add(sellerIDLabel);
 						productInfoPanel.add(quantityLabel);
