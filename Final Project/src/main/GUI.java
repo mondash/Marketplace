@@ -587,7 +587,6 @@ public class GUI extends JFrame implements WindowListener {
 			infoPanel.revalidate();
 			infoPanel.repaint();
 		}
-
 	}
 
 	private void initChangeNameFrame() {
@@ -1203,10 +1202,6 @@ public class GUI extends JFrame implements WindowListener {
 		productInfoFrame.pack();
 		productInfoFrame.setLocationRelativeTo(this);
 		productInfoFrame.setVisible(true);
-	}
-
-	public Marketplace getStore() {
-		return this.store;
 	}
 
 	@Override
