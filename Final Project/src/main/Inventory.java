@@ -18,8 +18,12 @@ import java.util.Set;
 
 public class Inventory {
 
+	// instance variables
 	private ArrayList<Product> products;
 
+	/**
+	 * Inventory Constructor
+	 */
 	public Inventory() {
 		products = new ArrayList<Product>();
 	}
@@ -86,6 +90,7 @@ public class Inventory {
 
 		return names;
 	}
+	
 	
 	public void loadProducts(String dir) {
 		
