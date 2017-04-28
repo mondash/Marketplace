@@ -1,7 +1,0 @@
-22
-20
-Nate's Product
-This is a really cool product.+You must get this product.+Buy now!
-Nate
-10.5
-0

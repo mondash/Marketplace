@@ -1,7 +1,0 @@
-25
-20
-another product
-another description
-another category
-19.0
-21

@@ -41,8 +41,8 @@ public class GUI extends JFrame implements WindowListener {
 
 	private static final long serialVersionUID = 1L;
 	private Marketplace store;
-	private static final int WIDTH = 800;
-	private static final int HEIGHT = 600;
+	public static final int WIDTH = 1000;
+	public static final int HEIGHT = 625;
 	private static final String inventoryDir = "res//products//";
 	private static final String directoryDir = "res//accounts//";
 	private static final String constantsDir = "res//constants.txt";
@@ -52,9 +52,9 @@ public class GUI extends JFrame implements WindowListener {
 	private JPanel loginPanel;
 
 	private JPanel menuPanel;
-	private JPanel categoryPanel;
-	private JPanel inventoryPanel;
-	private JPanel cartPanel;
+	private CategoryPanel categoryPanel;
+	private InventoryPanel inventoryPanel;
+	private CartPanel cartPanel;
 
 	public GUI() {
 		super();
@@ -91,19 +91,19 @@ public class GUI extends JFrame implements WindowListener {
 		enclosingPanel.setBorder(BorderFactory.createTitledBorder("Login"));
 
 		JLabel infoLabel = new JLabel("Enter your Login Information");
-		infoLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+		infoLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 		JLabel usernameLabel = new JLabel("Username");
-		usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+		usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JLabel passwordLabel = new JLabel("Password");
-		passwordLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+		passwordLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JTextField usernameArea = new JTextField(20);
-		usernameArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+		usernameArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JPasswordField passwordArea = new JPasswordField(20);
-		passwordArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+		passwordArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JButton loginButton = new JButton("Login");
-		loginButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+		loginButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JButton registerButton = new JButton("Register");
-		registerButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+		registerButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 
 		ActionListener listener = new ActionListener() {
 			@Override
@@ -231,9 +231,9 @@ public class GUI extends JFrame implements WindowListener {
 		this.menuPanel = new JPanel();
 		this.menuPanel.setLayout(new BoxLayout(this.menuPanel, BoxLayout.LINE_AXIS));
 
-		initCategoryPanel();
-		initInventoryPanel();
-		initCartPanel();
+		categoryPanel = new CategoryPanel();
+		inventoryPanel = new InventoryPanel();
+		cartPanel = new CartPanel();
 
 		JMenuBar menuBar = initMenuBar();
 
@@ -241,19 +241,6 @@ public class GUI extends JFrame implements WindowListener {
 		this.menuPanel.add(this.categoryPanel);
 		this.menuPanel.add(this.inventoryPanel);
 		this.menuPanel.add(this.cartPanel);
-	}
-
-	private void revalidateMenuPanel() {
-		/*initInventoryPanel();
-		initCartPanel();
-		JMenuBar menuBar = initMenuBar();
-
-		this.menuPanel.removeAll();
-		this.setJMenuBar(menuBar);
-		this.menuPanel.add(this.categoryPanel);
-		this.menuPanel.add(this.inventoryPanel);
-		this.menuPanel.add(this.cartPanel);*/
-		this.menuPanel.revalidate();
 	}
 
 	private JMenuBar initMenuBar() {
@@ -362,191 +349,245 @@ public class GUI extends JFrame implements WindowListener {
 		return menuBar;
 	}
 
-	private void initCategoryPanel() {
-		this.categoryPanel = new JPanel();
+	class CategoryPanel extends JPanel {
 
-		JPanel checkBoxPanel = new JPanel();
-		checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.PAGE_AXIS));
+		private static final long serialVersionUID = 1L;
 
-		JScrollPane categoryScroller = new JScrollPane(checkBoxPanel);
-		categoryScroller.setBorder(BorderFactory.createTitledBorder("Categories"));
+		private JScrollPane categoryScroller;
+		private JPanel checkBoxPanel;
+		private JCheckBox[] checkBoxes;
+		private String[] catNames;
 
-		String[] categories = this.store.getInventory().getCategories();
-		JCheckBox[] catBoxes = new JCheckBox[categories.length];
+		public CategoryPanel() {
+			super(new BorderLayout());
 
-		for (int i = 0; i < catBoxes.length; i++) {
-			catBoxes[i] = new JCheckBox(categories[i]);
-			catBoxes[i].setActionCommand(categories[i]);
-			catBoxes[i].setSelected(true);
-			checkBoxPanel.add(catBoxes[i]);
-			catBoxes[i].addItemListener(new ItemListener() {
+			checkBoxPanel = new JPanel();
+			checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.PAGE_AXIS));
 
+			categoryScroller = new JScrollPane(checkBoxPanel);
+			categoryScroller.setBorder(BorderFactory.createTitledBorder("Categories"));
+
+			catNames = store.getInventory().getCategories();
+			checkBoxes = new JCheckBox[catNames.length];
+
+			ItemListener checkBoxListener = new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
-					System.out.println("Category selected/deselected");
 					ArrayList<String> selectedCategories = new ArrayList<String>();
-					for (JCheckBox box : catBoxes) {
+					for (JCheckBox box : checkBoxes) {
 						if (box.isSelected()) {
 							selectedCategories.add(box.getText());
 						}
 					}
-					String[] catNames = new String[selectedCategories.size()];
+					catNames = new String[selectedCategories.size()];
 					catNames = selectedCategories.toArray(catNames);
-					inventoryPanel.removeAll();
+					updateData();
+					inventoryPanel.updateData();
+				}
+			};
+			for (int i = 0; i < catNames.length; i++) {
+				checkBoxes[i] = new JCheckBox(catNames[i]);
+				checkBoxes[i].setActionCommand(catNames[i]);
+				checkBoxes[i].setSelected(true);
+				checkBoxPanel.add(checkBoxes[i]);
+				checkBoxes[i].addItemListener(checkBoxListener);
+				updateData();
+			}
+			super.add(categoryScroller);
+			super.revalidate();
+		}
 
-					updateInventoryPanelWith(store.getInventory().getProductIDs(catNames));
+		public void updateData() {
+			checkBoxPanel.revalidate();
+			checkBoxPanel.repaint();
+		}
+
+		public String[] getCategories() {
+			return this.catNames;
+		}
+	}
+
+	class InventoryPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+
+		private JPanel productsPanel;
+		private JScrollPane inventoryScroller;
+		private int[] productIDs;
+
+		public InventoryPanel() {
+			super(new BorderLayout());
+
+			productsPanel = new JPanel();
+			productsPanel.setLayout(new BoxLayout(productsPanel, BoxLayout.PAGE_AXIS));
+
+			inventoryScroller = new JScrollPane(productsPanel);
+			inventoryScroller.setBorder(BorderFactory.createTitledBorder("Inventory"));
+
+			updateData();
+
+			this.add(inventoryScroller);
+		}
+
+		private void addProductPanel(int productID) {
+
+			JPanel productPanel = new JPanel();
+
+			Product p = store.getInventory().get(productID);
+
+			JLabel identifierLabel = new JLabel(p.getIdentifier());
+
+			ActionListener listener = new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (e.getActionCommand().equals("More Info")) {
+						initProductInfoFrame(productID);
+					} else if (e.getActionCommand().equals("Add to Cart")) {
+						store.addToCart(p.getItemID(), 1);
+						inventoryPanel.updateData();
+						cartPanel.updateData();
+					}
+				}
+			};
+
+			JButton moreInfoButton = new JButton("More Info");
+			moreInfoButton.addActionListener(listener);
+			JButton addToCartButton = new JButton("Add to Cart");
+			addToCartButton.addActionListener(listener);
+			if (p.getQuantity() == 0) {
+				addToCartButton.setEnabled(false);
+			}
+
+			productPanel.add(identifierLabel);
+			productPanel.add(moreInfoButton);
+			productPanel.add(addToCartButton);
+
+			productPanel.setMaximumSize(productPanel.getPreferredSize());
+			productPanel.setAlignmentX(RIGHT_ALIGNMENT);
+			productsPanel.add(productPanel, Component.RIGHT_ALIGNMENT);
+		}
+
+		public void updateData() {
+			productIDs = store.getInventory().getProductIDs(categoryPanel.getCategories());
+
+			productsPanel.removeAll();
+			for (int prodID : productIDs) {
+				addProductPanel(prodID);
+			}
+			
+			productsPanel.revalidate();
+			productsPanel.repaint();
+		}
+	}
+
+	class CartPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+
+		private JPanel itemPanels;
+		private JPanel infoPanel;
+		private JScrollPane cartScroller;
+		private JLabel cartTotalLabel;
+		private JButton checkoutButton;
+		private double cartTotal;
+
+		public CartPanel() {
+			super(new BorderLayout());
+
+			itemPanels = new JPanel();
+			itemPanels.setLayout(new BoxLayout(itemPanels, BoxLayout.PAGE_AXIS));
+
+			cartScroller = new JScrollPane(itemPanels);
+			cartScroller.setBorder(BorderFactory.createTitledBorder("Cart"));
+
+			checkoutButton = new JButton("Checkout");
+			checkoutButton.setAlignmentX(CENTER_ALIGNMENT);
+			checkoutButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("Checkout");
+					store.checkOut();
+					updateData();
+					menuPanel.revalidate();
 				}
 			});
+
+			cartTotal = store.getCartTotal();
+			cartTotalLabel = new JLabel("$" + String.format("%.2f", cartTotal));
+
+			infoPanel = new JPanel();
+			infoPanel.add(cartTotalLabel);
+			infoPanel.add(checkoutButton);
+
+			updateData();
+
+			this.add(cartScroller, BorderLayout.CENTER);
+			this.add(infoPanel, BorderLayout.PAGE_END);
+			this.revalidate();
 		}
-		categoryPanel.add(categoryScroller);
-	}
 
-	private void updateInventoryPanelWith(int[] productIDs) {
+		private void addCartItemPanel(int productID, int quantity) {
 
-		JPanel productsPanel = new JPanel();
-		productsPanel.setLayout(new BoxLayout(productsPanel, BoxLayout.PAGE_AXIS));
-		JScrollPane inventoryScroller = new JScrollPane(productsPanel);
-		inventoryScroller.setBorder(BorderFactory.createTitledBorder("Inventory"));
-		inventoryScroller.setPreferredSize(new Dimension(350, HEIGHT - 150));
+			JPanel cartItemPanel = new JPanel();
 
-		for (int prodID : productIDs) {
-			JPanel productItemPanel = initProductItemPanel(prodID);
-			productItemPanel.setMaximumSize(productItemPanel.getPreferredSize());
-			productItemPanel.setAlignmentX(RIGHT_ALIGNMENT);
-			productsPanel.add(productItemPanel, Component.RIGHT_ALIGNMENT);
+			Product p = store.getInventory().get(productID);
 
+			JLabel cartItemLabel = new JLabel(p.getIdentifier());
+			JButton removeButton = new JButton("Remove");
+			removeButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					store.getCurrentAccount().removeFromCart(productID);
+					updateData();
+					cartPanel.cartScroller.revalidate();
+				}
+			});
+
+			JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(quantity, 1, p.getQuantity(), 1));
+			quantitySpinner.addChangeListener(new ChangeListener() {
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					int newQuantity = (int) quantitySpinner.getModel().getValue();
+					store.getCurrentAccount().updateCartWith(productID, newQuantity);
+					updateData();
+				}
+			});
+
+			cartItemPanel.add(cartItemLabel);
+			cartItemPanel.add(quantitySpinner);
+			cartItemPanel.add(removeButton);
+
+			cartItemPanel.setMaximumSize(cartItemPanel.getPreferredSize());
+			cartItemPanel.setAlignmentX(RIGHT_ALIGNMENT);
+			itemPanels.add(cartItemPanel, Component.RIGHT_ALIGNMENT);
 		}
-		inventoryScroller.revalidate();
 
-		this.inventoryPanel.removeAll();
-		this.inventoryPanel.add(inventoryScroller);
-		this.inventoryPanel.revalidate();
-	}
+		public void updateData() {
+			itemPanels.removeAll();
 
-	private void initInventoryPanel() {
-		this.inventoryPanel = new JPanel();
-		inventoryPanel.setMaximumSize(new Dimension(WIDTH, HEIGHT - 100));
-
-		JPanel productsPanel = new JPanel();
-		productsPanel.setLayout(new BoxLayout(productsPanel, BoxLayout.PAGE_AXIS));
-		JScrollPane inventoryScroller = new JScrollPane(productsPanel);
-		inventoryScroller.setBorder(BorderFactory.createTitledBorder("Products"));
-		
-		updateInventoryPanelWith(store.getInventory().getProductIDs());
-	}
-
-	private JPanel initProductItemPanel(int productID) {
-
-		JPanel productItemPanel = new JPanel();
-
-		Product p = store.getInventory().get(productID);
-
-		JLabel identifierLabel = new JLabel(p.getIdentifier());
-
-		ActionListener listener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getActionCommand().equals("More Info")) {
-					initProductInfoFrame(productID);
-				} else if (e.getActionCommand().equals("Add to Cart")) {
-					store.addToCart(p.getItemID(), 1);
-					revalidateMenuPanel();
+			for (String label : store.getCurrentAccount().getCartLabels()) {
+				if (label != null && !label.equals("")) {
+					String[] labelParts = label.split(" ");
+					int productID = Integer.parseInt(labelParts[0]);
+					int quantity = Integer.parseInt(labelParts[1]);
+					addCartItemPanel(productID, quantity);
 				}
 			}
-		};
 
-		JButton moreInfoButton = new JButton("More Info");
-		moreInfoButton.addActionListener(listener);
-		JButton addToCartButton = new JButton("Add to Cart");
-		addToCartButton.addActionListener(listener);
-		if (p.getQuantity() == 0) {
-			addToCartButton.setEnabled(false);
+			cartTotal = store.getCartTotal();
+			cartTotalLabel.setText("$" + String.format("%.2f", cartTotal));
+
+			checkoutButton.setEnabled(true);
+			if (cartTotal == 0 || cartTotal > store.getCurrentAccount().getMoney()) {
+				checkoutButton.setEnabled(false);
+			}
+
+			itemPanels.revalidate();
+			itemPanels.repaint();
+			infoPanel.revalidate();
+			infoPanel.repaint();
 		}
 
-		productItemPanel.add(identifierLabel);
-		productItemPanel.add(moreInfoButton);
-		productItemPanel.add(addToCartButton);
-
-		return productItemPanel;
-	}
-
-	private void initCartPanel() {
-		this.cartPanel = new JPanel(new BorderLayout());
-
-		JPanel cartPanels = new JPanel();
-		cartPanels.setLayout(new BoxLayout(cartPanels, BoxLayout.PAGE_AXIS));
-
-		JScrollPane cartScroller = new JScrollPane(cartPanels);
-		cartScroller.setPreferredSize(new Dimension(200, 400));
-		cartScroller.setBorder(BorderFactory.createTitledBorder("Cart"));
-
-		for (String label : store.getCurrentAccount().getCartLabels()) {
-			String[] labelParts = label.split(" ");
-			int productID = Integer.parseInt(labelParts[0]);
-			int quantity = Integer.parseInt(labelParts[1]);
-			JPanel itemPanel = initCartItemPanel(productID, quantity);
-			itemPanel.setMaximumSize(itemPanel.getPreferredSize());
-			itemPanel.setAlignmentX(RIGHT_ALIGNMENT);
-			cartPanels.add(itemPanel);
-		}
-
-		JButton checkoutButton = new JButton("Checkout");
-		checkoutButton.setAlignmentX(CENTER_ALIGNMENT);
-		checkoutButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				store.checkOut();
-				revalidateMenuPanel();
-			}
-		});
-
-		double cartTotal = store.getCartTotal();
-		JLabel totalLabel = new JLabel("$" + String.format("%.2f", cartTotal));
-		checkoutButton.setEnabled(true);
-		if (cartTotal == 0 || cartTotal > store.getCurrentAccount().getMoney()) {
-			checkoutButton.setEnabled(false);
-		}
-
-		JPanel infoPanel = new JPanel();
-		infoPanel.add(totalLabel);
-		infoPanel.add(checkoutButton);
-
-		cartPanel.add(cartScroller, BorderLayout.CENTER);
-		cartPanel.add(infoPanel, BorderLayout.PAGE_END);
-	}
-
-	private JPanel initCartItemPanel(int productID, int quantity) {
-
-		JPanel cartItemPanel = new JPanel();
-
-		Product p = store.getInventory().get(productID);
-
-		JLabel cartItemLabel = new JLabel(p.getIdentifier());
-		JButton removeButton = new JButton("Remove");
-		removeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				store.getCurrentAccount().removeFromCart(productID);
-				cartItemPanel.removeAll();
-				revalidateMenuPanel();
-			}
-		});
-
-		JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(quantity, 1, p.getQuantity(), 1));
-		quantitySpinner.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				int newQuantity = (int) quantitySpinner.getModel().getValue();
-				store.getCurrentAccount().updateCartWith(productID, newQuantity);
-				revalidateMenuPanel();
-			}
-		});
-
-		cartItemPanel.add(cartItemLabel);
-		cartItemPanel.add(quantitySpinner);
-		cartItemPanel.add(removeButton);
-
-		return cartItemPanel;
 	}
 
 	private void initChangeNameFrame() {
@@ -570,7 +611,8 @@ public class GUI extends JFrame implements WindowListener {
 					} else {
 						store.getCurrentAccount().setName(name);
 						changeNameFrame.dispose();
-						revalidateMenuPanel();
+						menuPanel.revalidate();
+						menuPanel.repaint();
 					}
 				} else if (e.getActionCommand().equals("Cancel")) {
 					changeNameFrame.dispose();
@@ -809,7 +851,9 @@ public class GUI extends JFrame implements WindowListener {
 									store.addProduct(store.getCurrentAccount().getID(), name, description, category,
 											price, quantity);
 									addProductFrame.dispose();
-									revalidateMenuPanel();
+									menuPanel.revalidate();
+									menuPanel.repaint();
+									inventoryPanel.updateData();
 								} else {
 									infoLabel.setText("Price cannot be 0");
 								}
@@ -948,7 +992,7 @@ public class GUI extends JFrame implements WindowListener {
 										p.setQuantity(quantity);
 
 										editProductFrame.dispose();
-										revalidateMenuPanel();
+										inventoryPanel.updateData();
 									} else {
 										infoLabel.setText("Price cannot be 0");
 									}
@@ -1161,6 +1205,10 @@ public class GUI extends JFrame implements WindowListener {
 		productInfoFrame.setVisible(true);
 	}
 
+	public Marketplace getStore() {
+		return this.store;
+	}
+
 	@Override
 	public void windowClosing(WindowEvent e) {
 		this.store.saveResources(constantsDir, inventoryDir, directoryDir);
@@ -1197,7 +1245,6 @@ public class GUI extends JFrame implements WindowListener {
 	}
 
 	public static void main(String[] args) {
-
 		new GUI();
 	}
 }
