@@ -28,6 +28,11 @@ public class Inventory {
 		products = new ArrayList<Product>();
 	}
 
+	/**
+	 * getter method for Inventory
+	 * @param productID
+	 * @return a Product matching the Product ID
+	 */
 	public Product get(int productID) {
 
 		for (Product p : this.products) {
@@ -38,6 +43,11 @@ public class Inventory {
 		return null;
 	}
 
+	/**
+	 * getter method for Inventory
+	 * @param productName
+	 * @return a Product matching the Product name
+	 */
 	public Product get(String productName) {
 
 		for (Product p : this.products) {
@@ -48,10 +58,18 @@ public class Inventory {
 		return null;
 	}
 
+	/**
+	 * adds products to the Array List of Products
+	 * @param product - adds a Product to the Array List of Products
+	 */
 	public void add(Product product) {
 		this.products.add(product);
 	}
 
+	/**
+	 * getter method for Inventory
+	 * @return a String Array of the Product Names
+	 */
 	public String[] getProductNames() {
 		String[] names = new String[this.products.size()];
 
@@ -61,6 +79,11 @@ public class Inventory {
 		return names;
 	}
 
+	/**
+	 * getter method for Inventory
+	 * @param catNames - String Array of categories to limit "search"
+	 * @return names of Products matching categories in the String Array
+	 */
 	public String[] getProductNames(String[] catNames) {
 		ArrayList<String> names = new ArrayList<String>();
 
@@ -79,6 +102,10 @@ public class Inventory {
 		return names.toArray(nameArray);
 	}
 
+	/**
+	 * getter method for Inventory
+	 * @return a String Array of categories for Products
+	 */
 	public String[] getCategories() {
 		Set<String> categories = new HashSet<String>();
 
@@ -91,7 +118,10 @@ public class Inventory {
 		return names;
 	}
 	
-	
+	/**
+	 * PrintReader for Inventory
+	 * @param dir - File Directory/location to read from the File
+	 */
 	public void loadProducts(String dir) {
 		
 		File folder = new File(dir);
@@ -102,6 +132,10 @@ public class Inventory {
 		}
 	}
 	
+	/**
+	 * PrintWriter for Inventory
+	 * @param dir - File Directory/location to write the File to
+	 */
 	public void saveProducts(String dir) {
 		for (Product p : this.products) {
 			p.writeToFile(dir);
