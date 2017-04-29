@@ -9,7 +9,9 @@ import java.util.Scanner;
  * 
  * @author MattOndash
  * @author NatePellant
- *
+ * 
+ * <p>
+ * Product represents all the data stored in one Marketplace item
  */
 public class Product {
 
