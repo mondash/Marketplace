@@ -6,6 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * 
+ * @author MattOndash
+ * @author NatePellant
+ *
+ *<p>
+ *Marketplace is the logical representation of the online store - it handles most logic events for the project
+ */
 public class Marketplace {
 
 	private Directory accounts;
