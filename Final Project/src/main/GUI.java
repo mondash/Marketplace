@@ -45,8 +45,9 @@ import javax.swing.event.ChangeListener;
  * @author MattOndash
  * @author NatePellant
  *
- *<p>
- *GUI is the starting point for launching the application and it handles all of the visual output/some of the logic of the program
+ *         <p>
+ *         GUI is the starting point for launching the application and it
+ *         handles all of the visual output/some of the logic of the program
  */
 public class GUI extends JFrame implements WindowListener {
 
@@ -248,7 +249,8 @@ public class GUI extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Initializes the main panel of the application and initializes its subcomponents 
+	 * Initializes the main panel of the application and initializes its
+	 * subcomponents
 	 */
 	private void initMenuPanel() {
 
@@ -268,7 +270,8 @@ public class GUI extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Creates a new menubar with specified functions 
+	 * Creates a new menubar with specified functions
+	 * 
 	 * @return the menubar
 	 */
 	private JMenuBar initMenuBar() {
@@ -381,8 +384,9 @@ public class GUI extends JFrame implements WindowListener {
 	 * 
 	 * @author MattOndash
 	 * 
-	 * <p>
-	 * CategoryPanel extends JPanel and allows greater flexibility for displaying categories on menu panel than a standard JPanel
+	 *         <p>
+	 *         CategoryPanel extends JPanel and allows greater flexibility for
+	 *         displaying categories on menu panel than a standard JPanel
 	 */
 	class CategoryPanel extends JPanel {
 
@@ -458,8 +462,9 @@ public class GUI extends JFrame implements WindowListener {
 	 * @author MattOndash
 	 * @author NatePellant
 	 * 
-	 *<p>
-	 * InventoryPanel extends JPanel and allows greater flexibility for displaying categories on menu panel than a standard JPanel
+	 *         <p>
+	 *         InventoryPanel extends JPanel and allows greater flexibility for
+	 *         displaying categories on menu panel than a standard JPanel
 	 */
 	class InventoryPanel extends JPanel {
 
@@ -472,7 +477,8 @@ public class GUI extends JFrame implements WindowListener {
 		private int[] productIDs;
 
 		/**
-		 * InventoryPanel Constructor: initializes all subcomponents of Inventory panel 
+		 * InventoryPanel Constructor: initializes all subcomponents of
+		 * Inventory panel
 		 */
 		public InventoryPanel() {
 			super(new BorderLayout());
@@ -489,8 +495,11 @@ public class GUI extends JFrame implements WindowListener {
 		}
 
 		/**
-		 * Initializes and adds a JPanel representation of a Product to the Product scroller
-		 * @param productID - the ID of the Product to add
+		 * Initializes and adds a JPanel representation of a Product to the
+		 * Product scroller
+		 * 
+		 * @param productID
+		 *            - the ID of the Product to add
 		 */
 		private void addProductPanel(int productID) {
 
@@ -551,8 +560,9 @@ public class GUI extends JFrame implements WindowListener {
 	 * @author MattOndash
 	 * @author NatePellant
 	 *
-	 *<p>
-	 * CartPanel extends JPanel and allows greater flexibility for displaying categories on menu panel than a standard JPanel
+	 *         <p>
+	 *         CartPanel extends JPanel and allows greater flexibility for
+	 *         displaying categories on menu panel than a standard JPanel
 	 */
 	class CartPanel extends JPanel {
 
@@ -568,7 +578,7 @@ public class GUI extends JFrame implements WindowListener {
 		private double cartTotal;
 
 		/**
-		 * CartPanel Constructor: initializes all subcomponents 
+		 * CartPanel Constructor: initializes all subcomponents
 		 */
 		public CartPanel() {
 			super(new BorderLayout());
@@ -607,8 +617,11 @@ public class GUI extends JFrame implements WindowListener {
 
 		/**
 		 * Initializes and adds item panel to the scroller
-		 * @param productID - the ID of the Product
-		 * @param quantity - the quantity of the Product
+		 * 
+		 * @param productID
+		 *            - the ID of the Product
+		 * @param quantity
+		 *            - the quantity of the Product
 		 */
 		private void addCartItemPanel(int productID, int quantity) {
 
@@ -682,11 +695,11 @@ public class GUI extends JFrame implements WindowListener {
 	private void showChangeNameDialog() {
 
 		JDialog dialog = new JDialog(this, "Edit Name", true);
-		
+
 		JLabel infoLabel = new JLabel(" ");
 		JLabel nameLabel = new JLabel("Enter new name");
 		JTextField nameField = new JTextField(20);
-		
+
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -718,14 +731,14 @@ public class GUI extends JFrame implements WindowListener {
 		JPanel namePanel = new JPanel();
 		namePanel.add(nameLabel);
 		namePanel.add(nameField);
-		
-		JPanel enclosingPanel =  new JPanel();
+
+		JPanel enclosingPanel = new JPanel();
 		enclosingPanel.setLayout(new BoxLayout(enclosingPanel, BoxLayout.PAGE_AXIS));
 		enclosingPanel.add(infoLabel);
 		enclosingPanel.add(namePanel);
 		enclosingPanel.add(buttonPanel);
 		enclosingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		
+
 		dialog.add(enclosingPanel);
 		dialog.pack();
 		dialog.setLocationRelativeTo(this);
@@ -772,14 +785,14 @@ public class GUI extends JFrame implements WindowListener {
 		JPanel passwordPanel = new JPanel();
 		passwordPanel.add(passordLabel);
 		passwordPanel.add(passwordField);
-		
+
 		JPanel enclosingPanel = new JPanel();
 		enclosingPanel.setLayout(new BoxLayout(enclosingPanel, BoxLayout.PAGE_AXIS));
 		enclosingPanel.add(infoLabel);
 		enclosingPanel.add(passwordPanel);
 		enclosingPanel.add(buttonPanel);
 		enclosingPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		
+
 		dialog.add(enclosingPanel);
 
 		dialog.pack();
@@ -1000,7 +1013,9 @@ public class GUI extends JFrame implements WindowListener {
 
 	/**
 	 * Initializes the frame necessary to edit a Product in the Marketplace
-	 * @param type - the type of the Account editing said Product
+	 * 
+	 * @param type
+	 *            - the type of the Account editing said Product
 	 */
 	private void initEditProductFrame(String type) {
 
@@ -1143,7 +1158,8 @@ public class GUI extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Initializes the frame necessary for an Admin to add a new Administrative Account
+	 * Initializes the frame necessary for an Admin to add a new Administrative
+	 * Account
 	 */
 	private void initAddAdminFrame() {
 		JFrame addAdminFrame = new JFrame();
@@ -1214,7 +1230,8 @@ public class GUI extends JFrame implements WindowListener {
 	}
 
 	/**
-	 * Initializes and displays the frame necessary for an Admin to change the percentage of profits they receive from sales
+	 * Initializes and displays the frame necessary for an Admin to change the
+	 * percentage of profits they receive from sales
 	 */
 	private void initEditRevenuePercentageFrame() {
 
@@ -1262,7 +1279,9 @@ public class GUI extends JFrame implements WindowListener {
 
 	/**
 	 * Initializes and displays the Product's info on its own frame
-	 * @param productID - the ID of the Product to display
+	 * 
+	 * @param productID
+	 *            - the ID of the Product to display
 	 */
 	private void initProductInfoFrame(int productID) {
 
@@ -1329,7 +1348,7 @@ public class GUI extends JFrame implements WindowListener {
 	public void windowClosing(WindowEvent e) {
 		this.store.saveResources(constantsDir, inventoryDir, directoryDir);
 	}
-	
+
 	/**
 	 * Attempts to set the look and feel of the project on window activation
 	 */
