@@ -285,7 +285,7 @@ public class GUI extends JFrame implements WindowListener {
 				} else if (e.getActionCommand().equals("Edit Password")) {
 					showChangePasswordDialog();
 				} else if (e.getActionCommand().equals("Display Funds")) {
-					JOptionPane.showMessageDialog(null, String.format("$%.2f", store.getCurrentAccount().getMoney()));
+					JOptionPane.showConfirmDialog(null, String.format("$%.2f", store.getCurrentAccount().getMoney()), "Funds", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null);
 				} else if (e.getActionCommand().equals("Add Funds")) {
 					showAddFundsDialog();
 				} else if (e.getActionCommand().equals("Withdraw Funds")) {
