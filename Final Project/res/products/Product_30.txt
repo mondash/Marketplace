@@ -1,0 +1,7 @@
+30
+28
+C++ for Dummies
+The coolest book in town.
+Book
+15.0
+500

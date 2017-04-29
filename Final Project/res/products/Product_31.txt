@@ -1,0 +1,7 @@
+31
+28
+SuperIDE
+A Java IDe
+Software
+100.0
+6000

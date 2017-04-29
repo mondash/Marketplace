@@ -10,8 +10,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -110,19 +108,12 @@ public class GUI extends JFrame implements WindowListener {
 		enclosingPanel.setBorder(BorderFactory.createTitledBorder("Login"));
 
 		JLabel infoLabel = new JLabel("Enter your Login Information");
-		// infoLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 		JLabel usernameLabel = new JLabel("Username");
-		// usernameLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JLabel passwordLabel = new JLabel("Password");
-		// passwordLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JTextField usernameArea = new JTextField(20);
-		// usernameArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JPasswordField passwordArea = new JPasswordField(20);
-		// passwordArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JButton loginButton = new JButton("Login");
-		// loginButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 		JButton registerButton = new JButton("Register");
-		// registerButton.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
 
 		ActionListener listener = new ActionListener() {
 			@Override
@@ -137,7 +128,7 @@ public class GUI extends JFrame implements WindowListener {
 						infoLabel.setText("Invalid Username / Password");
 					}
 				} else if (e.getActionCommand().equals("Register")) {
-					initRegisterFrame();
+					showRegisterDialog();
 				}
 			}
 		};
@@ -155,21 +146,21 @@ public class GUI extends JFrame implements WindowListener {
 		buttonPanel.add(registerButton);
 
 		enclosingPanel.add(infoLabel);
+		infoLabel.setAlignmentX(CENTER_ALIGNMENT);
 		enclosingPanel.add(usernamePanel);
 		enclosingPanel.add(passwordPanel);
 		enclosingPanel.add(buttonPanel);
 
-		this.loginPanel.add(enclosingPanel, BorderLayout.CENTER);
-		this.loginPanel.add(logoLabel, BorderLayout.PAGE_END);
+		this.loginPanel.add(enclosingPanel, BorderLayout.PAGE_START);
+		this.loginPanel.add(logoLabel, BorderLayout.CENTER);
 	}
 
 	/**
 	 * Initializes and displays the frame necessary to register a new Account
 	 */
-	private void initRegisterFrame() {
-		JFrame registerFrame = new JFrame();
-		registerFrame.setLayout(new BorderLayout());
-		registerFrame.setTitle("Register");
+	private void showRegisterDialog() {
+
+		JDialog dialog = new JDialog(this, "Register", true);
 
 		JPanel registerPanel = new JPanel();
 
@@ -218,14 +209,14 @@ public class GUI extends JFrame implements WindowListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Cancel")) {
-					registerFrame.dispose();
+					dialog.dispose();
 				} else if (e.getActionCommand().equals("Register")) {
 					if (usernameArea.getText() != null && !usernameArea.getText().equals("")) {
 						if (!store.getDir().inDir(usernameArea.getText())) {
 							if (passwordArea.getText() != null && !passwordArea.getText().equals("")) {
 								store.addAccount(usernameArea.getText(), passwordArea.getText().toCharArray(),
 										buttonGroup.getSelection().getActionCommand());
-								registerFrame.dispose();
+								dialog.dispose();
 							} else {
 								infoLabel.setText("Invalid Password!!");
 							}
@@ -241,11 +232,10 @@ public class GUI extends JFrame implements WindowListener {
 		cancelButton.addActionListener(listener);
 		registerButton.addActionListener(listener);
 
-		registerFrame.add(registerPanel);
-		registerFrame.setResizable(false);
-		registerFrame.pack();
-		registerFrame.setLocationRelativeTo(this);
-		registerFrame.setVisible(true);
+		dialog.add(registerPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
@@ -297,17 +287,17 @@ public class GUI extends JFrame implements WindowListener {
 				} else if (e.getActionCommand().equals("Display Funds")) {
 					JOptionPane.showMessageDialog(null, String.format("$%.2f", store.getCurrentAccount().getMoney()));
 				} else if (e.getActionCommand().equals("Add Funds")) {
-					initAddFundsFrame();
+					showAddFundsDialog();
 				} else if (e.getActionCommand().equals("Withdraw Funds")) {
-					initRemoveFundsFrame();
+					showRemoveFundsDialog();
 				} else if (e.getActionCommand().equals("Add Product")) {
-					initAddProductFrame();
+					showAddProductDialog();
 				} else if (e.getActionCommand().equals("Edit Product")) {
-					initEditProductFrame(store.getCurrentAccount().getType());
+					showEditProductDialog(store.getCurrentAccount().getType());
 				} else if (e.getActionCommand().equals("Add Admin Account")) {
-					initAddAdminFrame();
+					showAddAdminDialog();
 				} else if (e.getActionCommand().equals("Edit Revenue Percentage")) {
-					initEditRevenuePercentageFrame();
+					showEditRevenuePercentageDialog();
 				}
 			}
 		};
@@ -803,9 +793,9 @@ public class GUI extends JFrame implements WindowListener {
 	/**
 	 * Displays the dialog which allows a user to add funds
 	 */
-	private void initAddFundsFrame() {
+	private void showAddFundsDialog() {
 
-		JFrame addFundsFrame = new JFrame();
+		JDialog dialog = new JDialog(this, "Add Funds", true);
 
 		JPanel addFundsPanel = new JPanel();
 		addFundsPanel.setLayout(new BoxLayout(addFundsPanel, BoxLayout.PAGE_AXIS));
@@ -819,9 +809,9 @@ public class GUI extends JFrame implements WindowListener {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("OK")) {
 					store.getCurrentAccount().addMoney((int) fundsSpinner.getValue());
-					addFundsFrame.dispose();
+					dialog.dispose();
 				} else if (e.getActionCommand().equals("Cancel")) {
-					addFundsFrame.dispose();
+					dialog.dispose();
 				}
 			}
 		};
@@ -839,19 +829,18 @@ public class GUI extends JFrame implements WindowListener {
 		addFundsPanel.add(fundsSpinner);
 		addFundsPanel.add(buttonPanel);
 
-		addFundsFrame.add(addFundsPanel);
-		addFundsFrame.setResizable(false);
-		addFundsFrame.pack();
-		addFundsFrame.setLocationRelativeTo(this);
-		addFundsFrame.setVisible(true);
+		dialog.add(addFundsPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
 	 * Displays the dialog which allows a user to remove funds
 	 */
-	private void initRemoveFundsFrame() {
+	private void showRemoveFundsDialog() {
 
-		JFrame removeFundsFrame = new JFrame();
+		JDialog dialog = new JDialog(this, "Remove Funds", true);
 
 		JPanel removeFundsPanel = new JPanel();
 		removeFundsPanel.setLayout(new BoxLayout(removeFundsPanel, BoxLayout.PAGE_AXIS));
@@ -859,16 +848,16 @@ public class GUI extends JFrame implements WindowListener {
 		JLabel infoLabel = new JLabel("Select number of funds to withdraw");
 
 		JSpinner fundsSpinner = new JSpinner(
-				new SpinnerNumberModel(0, 0, String.format("$%.2d", store.getCurrentAccount().getMoney()), 1));
+				new SpinnerNumberModel(0.0, 0.0, store.getCurrentAccount().getMoney(), 1));
 
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("OK")) {
 					store.getCurrentAccount().removeMoney((double) fundsSpinner.getValue());
-					removeFundsFrame.dispose();
+					dialog.dispose();
 				} else if (e.getActionCommand().equals("Cancel")) {
-					removeFundsFrame.dispose();
+					dialog.dispose();
 				}
 			}
 		};
@@ -886,19 +875,18 @@ public class GUI extends JFrame implements WindowListener {
 		removeFundsPanel.add(fundsSpinner);
 		removeFundsPanel.add(buttonPanel);
 
-		removeFundsFrame.add(removeFundsPanel);
-		removeFundsFrame.setResizable(false);
-		removeFundsFrame.pack();
-		removeFundsFrame.setLocationRelativeTo(this);
-		removeFundsFrame.setVisible(true);
+		dialog.add(removeFundsPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
 	 * Shows the frame necessary to add a new Product to the Marketplace
 	 */
-	private void initAddProductFrame() {
+	private void showAddProductDialog() {
 
-		JFrame addProductFrame = new JFrame();
+		JDialog dialog = new JDialog(this, "Add Product", true);
 
 		JPanel addProductPanel = new JPanel();
 		addProductPanel.setLayout(new BoxLayout(addProductPanel, BoxLayout.PAGE_AXIS));
@@ -925,13 +913,13 @@ public class GUI extends JFrame implements WindowListener {
 		descriptionPanel.add(descriptionLabel);
 		descriptionPanel.add(textScroller);
 
-		JPanel categoryPanel = new JPanel();
+		JPanel categoryDispPanel = new JPanel();
 
 		JLabel categoryLabel = new JLabel("Category");
 		JTextField categoryField = new JTextField(20);
 
-		categoryPanel.add(categoryLabel);
-		categoryPanel.add(categoryField);
+		categoryDispPanel.add(categoryLabel);
+		categoryDispPanel.add(categoryField);
 
 		JPanel pricePanel = new JPanel();
 
@@ -967,10 +955,11 @@ public class GUI extends JFrame implements WindowListener {
 
 									store.addProduct(store.getCurrentAccount().getID(), name, description, category,
 											price, quantity);
-									addProductFrame.dispose();
+									dialog.dispose();
+									categoryPanel.updateData();
+									inventoryPanel.updateData();
 									menuPanel.revalidate();
 									menuPanel.repaint();
-									inventoryPanel.updateData();
 								} else {
 									infoLabel.setText("Price cannot be 0");
 								}
@@ -984,7 +973,7 @@ public class GUI extends JFrame implements WindowListener {
 						infoLabel.setText("Invalid name");
 					}
 				} else if (e.getActionCommand().equals("Cancel")) {
-					addProductFrame.dispose();
+					dialog.dispose();
 				}
 			}
 		};
@@ -999,16 +988,15 @@ public class GUI extends JFrame implements WindowListener {
 		addProductPanel.add(infoLabel);
 		addProductPanel.add(namePanel);
 		addProductPanel.add(descriptionPanel);
-		addProductPanel.add(categoryPanel);
+		addProductPanel.add(categoryDispPanel);
 		addProductPanel.add(pricePanel);
 		addProductPanel.add(quantityPanel);
 		addProductPanel.add(buttonPanel);
 
-		addProductFrame.add(addProductPanel);
-		addProductFrame.setResizable(true);
-		addProductFrame.pack();
-		addProductFrame.setLocationRelativeTo(this);
-		addProductFrame.setVisible(true);
+		dialog.add(addProductPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
@@ -1017,7 +1005,7 @@ public class GUI extends JFrame implements WindowListener {
 	 * @param type
 	 *            - the type of the Account editing said Product
 	 */
-	private void initEditProductFrame(String type) {
+	private void showEditProductDialog(String type) {
 
 		String[] productIdentifiers;
 		String productIdentifier = "";
@@ -1034,7 +1022,7 @@ public class GUI extends JFrame implements WindowListener {
 
 		if (productIdentifier != null && !productIdentifier.equals("")) {
 
-			JFrame editProductFrame = new JFrame();
+			JDialog dialog = new JDialog(this, "Edit Product", true);
 
 			JPanel editProductPanel = new JPanel();
 			editProductPanel.setLayout(new BoxLayout(editProductPanel, BoxLayout.PAGE_AXIS));
@@ -1113,7 +1101,7 @@ public class GUI extends JFrame implements WindowListener {
 										p.setPrice(price);
 										p.setQuantity(quantity);
 
-										editProductFrame.dispose();
+										dialog.dispose();
 										inventoryPanel.updateData();
 									} else {
 										infoLabel.setText("Price cannot be 0");
@@ -1128,7 +1116,7 @@ public class GUI extends JFrame implements WindowListener {
 							infoLabel.setText("Invalid name");
 						}
 					} else if (e.getActionCommand().equals("Cancel")) {
-						editProductFrame.dispose();
+						dialog.dispose();
 					}
 				}
 			};
@@ -1148,11 +1136,10 @@ public class GUI extends JFrame implements WindowListener {
 			editProductPanel.add(quantityPanel);
 			editProductPanel.add(buttonPanel);
 
-			editProductFrame.add(editProductPanel);
-			editProductFrame.setResizable(true);
-			editProductFrame.pack();
-			editProductFrame.setLocationRelativeTo(this);
-			editProductFrame.setVisible(true);
+			dialog.add(editProductPanel);
+			dialog.pack();
+			dialog.setLocationRelativeTo(this);
+			dialog.setVisible(true);
 
 		}
 	}
@@ -1161,10 +1148,9 @@ public class GUI extends JFrame implements WindowListener {
 	 * Initializes the frame necessary for an Admin to add a new Administrative
 	 * Account
 	 */
-	private void initAddAdminFrame() {
-		JFrame addAdminFrame = new JFrame();
-		addAdminFrame.setLayout(new BorderLayout());
-		addAdminFrame.setTitle("Register");
+	private void showAddAdminDialog() {
+
+		JDialog dialog = new JDialog(this, "Add Admin", true);
 
 		JPanel addAdminPanel = new JPanel();
 
@@ -1200,13 +1186,13 @@ public class GUI extends JFrame implements WindowListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Cancel")) {
-					addAdminFrame.dispose();
+					dialog.dispose();
 				} else if (e.getActionCommand().equals("Register")) {
 					if (usernameArea.getText() != null && !usernameArea.getText().equals("")) {
 						if (!store.getDir().inDir(usernameArea.getText())) {
 							if (passwordArea.getText() != null && !passwordArea.getText().equals("")) {
 								store.addAccount(usernameArea.getText(), passwordArea.getText().toCharArray(), "Admin");
-								addAdminFrame.dispose();
+								dialog.dispose();
 							} else {
 								infoLabel.setText("Invalid Password!!");
 							}
@@ -1222,25 +1208,24 @@ public class GUI extends JFrame implements WindowListener {
 		cancelButton.addActionListener(listener);
 		registerButton.addActionListener(listener);
 
-		addAdminFrame.add(addAdminPanel);
-		addAdminFrame.setResizable(false);
-		addAdminFrame.pack();
-		addAdminFrame.setLocationRelativeTo(this);
-		addAdminFrame.setVisible(true);
+		dialog.add(addAdminPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
 	 * Initializes and displays the frame necessary for an Admin to change the
 	 * percentage of profits they receive from sales
 	 */
-	private void initEditRevenuePercentageFrame() {
+	private void showEditRevenuePercentageDialog() {
 
-		JFrame editRevenuePercentageFrame = new JFrame();
+		JDialog dialog = new JDialog(this, "Edit Revenue Percentage");
 
 		JPanel editRevenuePercentagePanel = new JPanel();
 		editRevenuePercentagePanel.setLayout(new BoxLayout(editRevenuePercentagePanel, BoxLayout.PAGE_AXIS));
 
-		JLabel infoLabel = new JLabel("Enter percentage (in decimal notation) of sale profits to sellers");
+		JLabel infoLabel = new JLabel("Enter percentage (in decimal notation)");
 
 		JSpinner percentageSpinner = new JSpinner(
 				new SpinnerNumberModel(Marketplace.getSellerRevenuePercentage(), 0, 1, .01));
@@ -1250,9 +1235,9 @@ public class GUI extends JFrame implements WindowListener {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("OK")) {
 					Marketplace.setSellerRevenuePercentage((double) percentageSpinner.getValue());
-					editRevenuePercentageFrame.dispose();
+					dialog.dispose();
 				} else if (e.getActionCommand().equals("Cancel")) {
-					editRevenuePercentageFrame.dispose();
+					dialog.dispose();
 				}
 			}
 		};
@@ -1270,11 +1255,10 @@ public class GUI extends JFrame implements WindowListener {
 		editRevenuePercentagePanel.add(percentageSpinner);
 		editRevenuePercentagePanel.add(buttonPanel);
 
-		editRevenuePercentageFrame.add(editRevenuePercentagePanel);
-		editRevenuePercentageFrame.setResizable(false);
-		editRevenuePercentageFrame.pack();
-		editRevenuePercentageFrame.setLocationRelativeTo(this);
-		editRevenuePercentageFrame.setVisible(true);
+		dialog.add(editRevenuePercentagePanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
@@ -1285,8 +1269,7 @@ public class GUI extends JFrame implements WindowListener {
 	 */
 	private void initProductInfoFrame(int productID) {
 
-		JFrame productInfoFrame = new JFrame();
-		productInfoFrame.setTitle("Product Info");
+		JDialog dialog = new JDialog(this, "More Info", false);
 
 		JPanel productInfoPanel = new JPanel();
 		productInfoPanel.setLayout(new BoxLayout(productInfoPanel, BoxLayout.PAGE_AXIS));
@@ -1304,22 +1287,21 @@ public class GUI extends JFrame implements WindowListener {
 		descriptionArea.setFont(UIManager.getFont("Label.font"));
 		descriptionArea.setEditable(false);
 		JScrollPane descriptionScroller = new JScrollPane(descriptionArea);
-		descriptionScroller.setPreferredSize(new Dimension(250, 100));
+		descriptionScroller.setPreferredSize(new Dimension(200, 100));
 
 		JPanel descriptionPanel = new JPanel();
 		descriptionPanel.add(descriptionLabel);
 		descriptionPanel.add(descriptionScroller);
 
+		JLabel sellerLabel = new JLabel("SellerID: " + p.getSellerID());
 		JLabel categoryLabel = new JLabel("Category: " + p.getCategory());
-
 		JLabel priceLabel = new JLabel("Price: $" + p.getPrice());
-
 		JLabel quantityLabel = new JLabel("Quantity: " + p.getQuantity());
 
 		ActionListener listener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				productInfoFrame.dispose();
+				dialog.dispose();
 			}
 		};
 
@@ -1329,16 +1311,16 @@ public class GUI extends JFrame implements WindowListener {
 		productInfoPanel.add(nameLabel);
 		productInfoPanel.add(descriptionLabel);
 		productInfoPanel.add(descriptionPanel);
+		productInfoPanel.add(sellerLabel);
 		productInfoPanel.add(categoryLabel);
 		productInfoPanel.add(priceLabel);
 		productInfoPanel.add(quantityLabel);
 		productInfoPanel.add(acceptButton);
 
-		productInfoFrame.add(productInfoPanel);
-		productInfoFrame.setResizable(false);
-		productInfoFrame.pack();
-		productInfoFrame.setLocationRelativeTo(this);
-		productInfoFrame.setVisible(true);
+		dialog.add(productInfoPanel);
+		dialog.pack();
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
 	}
 
 	/**
