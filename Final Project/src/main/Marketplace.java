@@ -18,31 +18,10 @@ public class Marketplace {
 
 		accounts = new Directory();
 		inventory = new Inventory();
-		/*
-		addProduct(12, "P1", "desc", "cat1", 12, 200);
-		addProduct(13, "P2", "desc12", "cat2", 12.4, 400);
-		addProduct(14, "P3", "desc12", "cat1", 12.4, 400);
-		addProduct(15, "P4", "desc12", "cat3", 12.4, 400);
-		addProduct(16, "P5", "desc12", "cat3", 12.4, 400);
-		addProduct(17, "P6", "desc12", "cat4", 12.4, 400);
-		addProduct(18, "P7", "desc12", "cat5", 12.4, 400);
-		addProduct(19, "P8", "desc12", "cat6", 12.4, 400);
-		addProduct(10, "P9", "desc12", "cat7", 12.4, 400);
-		addProduct(11, "P10", "desc12", "cat8", 12.4, 400);
-		addProduct(12, "P11", "desc12", "cat1", 12.4, 400);
-		addProduct(12, "P12", "desc12", "cat3", 12.4, 400);
-		addProduct(12, "P13", "desc12", "cat2", 12.4, 400);
-		addProduct(12, "P14", "desc12", "cat2", 12.4, 400);
-		addProduct(12, "P15", "desc12", "cat2", 12.4, 400);
-		addProduct(12, "P16", "desc12", "cat2", 12.4, 400);
-		addProduct(12, "P17", "desc12", "cat2", 12.4, 400);
-		addProduct(12, "P18", "desc12", "cat2", 12.4, 400);
-		
-		addAccount("Matt", "pass".toCharArray(), "Buyer");
-		*/
+		currentAccount = null;
 	}
 
-	private int assignID() {
+	private static int assignID() {
 		ID++;
 		return ID;
 	}
@@ -61,8 +40,8 @@ public class Marketplace {
 
 	}
 
-	public void addProduct(int sellerID, String name, String description, String catagory, double price, int quantity) {
-		inventory.add(new Product(assignID(), sellerID, name, description, catagory, price, quantity));
+	public void addProduct(int sellerID, String name, String description, String category, double price, int quantity) {
+		inventory.add(new Product(assignID(), sellerID, name, description, category, price, quantity));
 	}
 
 	public boolean tryLogin(String name, char[] password) {
@@ -80,8 +59,8 @@ public class Marketplace {
 		this.currentAccount = null;
 	}
 
-	public void addToCart(int id, int quantity) {
-		this.currentAccount.addToCart(id, quantity);
+	public void addToCart(int id) {
+		this.currentAccount.addToCart(id);
 	}
 
 	public void removeFromCart(int id) {
@@ -104,7 +83,7 @@ public class Marketplace {
 		this.currentAccount.checkOut();
 	}
 
-	public void conductTransaction(Point[] cart) {
+	private void conductTransaction(Point[] cart) {
 		for (Point p : cart) {
 			Product product = this.inventory.get(p.x);
 			Account seller = this.accounts.get(product.getSellerID());
@@ -114,14 +93,14 @@ public class Marketplace {
 		}
 	}
 
-	public void updateInventory(Point[] cart) {
+	private void updateInventory(Point[] cart) {
 		for (Point p : cart) {
 			Product product = this.inventory.get(p.x);
 			product.purchase(p.y);
 		}
 	}
 	
-	public void payAdmins(double adminRevenue) {
+	private void payAdmins(double adminRevenue) {
 		Account[] admins = this.accounts.getAdmins();
 		
 		double revenuePerAdmin = adminRevenue / admins.length;

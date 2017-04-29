@@ -1,6 +1,7 @@
 package main;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class Inventory {
 		return null;
 	}
 
-	public Product get(String productName) {
+	/*public Product get(String productName) {
 
 		for (Product p : this.products) {
 			if (p.getName().equals(productName)) {
@@ -30,64 +31,87 @@ public class Inventory {
 			}
 		}
 		return null;
-	}
+	}*/
 
 	public void add(Product product) {
 		this.products.add(product);
-	}
-	
-	public Product[] getProductsOwnedBy(int sellerID) {
-		ArrayList<Product> products = new ArrayList<Product>();
-		
-		for (Product p : this.products) {
-			if (p.getSellerID() == sellerID) {
-				products.add(p);
+		// sorts products by name for convenient viewing in GUI
+		products.sort(new Comparator<Product>() {
+			@Override
+			public int compare(Product p1, Product p2) {
+				return p1.getName().compareTo(p2.getName());
 			}
-		}
-		
-		Product[] productArray = new Product[products.size()];
-		productArray = products.toArray(productArray);
-		
-		return productArray;
+		});
 	}
 
-	public String[] getProductNames() {
+	/*public String[] getProductNames() {
 		String[] names = new String[this.products.size()];
 
 		for (int i = 0; i < this.products.size(); i++) {
 			names[i] = this.products.get(i).getName();
 		}
 		return names;
+	}*/
+	
+	public int[] getProductIDs() {
+		int[] IDs = new int[this.products.size()];
+		
+		for (int i = 0; i < this.products.size(); i++) {
+			IDs[i] = this.products.get(i).getItemID();
+		}
+		return IDs;
 	}
-
-	public String[] getProductNames(String[] catNames) {
-		ArrayList<String> names = new ArrayList<String>();
-
-		for (Product p : this.products) {
+	
+	public int[] getProductIDs(String[] catNames) {
+		ArrayList<Integer> IDs = new ArrayList<Integer>();
+		
+		for (Product p: this.products) {
 			boolean hasCat = false;
-			for (String catName : catNames) {
+			for (String catName: catNames) {
 				if (p.getCategory().equals(catName)) {
 					hasCat = true;
 				}
 			}
 			if (hasCat) {
-				names.add(p.getName());
+				IDs.add(p.getItemID());
 			}
 		}
-		String[] nameArray = new String[names.size()];
-		return names.toArray(nameArray);
+		
+		return IDs.stream().mapToInt(i->i).toArray();
 	}
 	
-	public String[] getProductNames(int sellerID) {
-		ArrayList<String> names = new ArrayList<String>();
+	public String[] getProductIdentifiers() {
+		String[] identifiers = new String[this.products.size()];
+		
+		for (int i = 0; i < this.products.size(); i++) {
+			identifiers[i] = this.products.get(i).getIdentifier();
+		}
+
+		return identifiers;
+	}
+	
+	public String[] getProductIdentifiers(int sellerID) {
+		ArrayList<String> identifiers = new ArrayList<String>();
 
 		for (Product p : this.products) {
 			if (p.getSellerID() == sellerID) {
-				names.add(p.getName());
+				identifiers.add(p.getIdentifier());
 			}
 		}
-		String[] nameArray = new String[names.size()];
-		return names.toArray(nameArray);
+		String[] identifierArray = new String[identifiers.size()];
+		return identifiers.toArray(identifierArray);
+	}
+	
+	public int[] getProductIDs(int sellerID) {
+		ArrayList<Integer> IDs = new ArrayList<Integer>();
+		
+		for (Product p: this.products) {
+			if (p.getSellerID() == sellerID) {
+				IDs.add(p.getItemID());
+			}
+		}
+		
+		return IDs.stream().mapToInt(i->i).toArray();
 	}
 
 	public String[] getCategories() {

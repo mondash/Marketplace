@@ -3,5 +3,5 @@
 Product 10
 This is the description of product number 10.
 Nate
-10.4
-400
+16.4
+389
